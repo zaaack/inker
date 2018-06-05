@@ -2,8 +2,6 @@ import * as Hydux from 'hydux'
 
 const { Cmd } = Hydux
 
-
-
 export const init = {
   state: () => ({
   }),

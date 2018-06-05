@@ -1,6 +1,7 @@
 import _app from 'hydux'
 import withReact, { React } from 'hydux-react'
 import { ActionsType } from 'hydux/lib/types'
+import * as App from './App'
 
 // let app = withPersist<State, Actions>({
 //   key: 'time-game/v1'
@@ -20,22 +21,8 @@ if (process.env.NODE_ENV === 'development') {
   app = hmr()(app)
 }
 
-const actions = {
-}
-
-const state = {
-}
-
-type Actions = typeof actions
-type State = typeof state
-const view = (state: State, actions: Actions) => {
-  return (
-    <div></div>
-  )
-}
-
 app({
-  init: () => state,
-  actions,
-  view,
+  init: () => [App.init.state, App.init.cmd()],
+  actions: App.actions,
+  view: App.view,
 })

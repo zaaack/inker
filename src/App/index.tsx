@@ -10,6 +10,9 @@ const { Cmd } = Hydux
 const rootCss = css`
 `
 
+export const init = State.init
+export const actions = State.actions
+
 export const view = (state: State.State, actions: State.Actions) => {
   return (
     <div>

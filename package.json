@@ -16,7 +16,6 @@
     "preversion": "npm run build && npm run build:dist && git add -A"
   },
   "pre-commit": [
-    "test"
   ],
   "repository": {
     "type": "git",
@@ -76,6 +75,7 @@
     "hydux-mutator": "^0.1.11",
     "hydux-pixi": "^0.1.0",
     "hydux-react": "^0.3.1",
-    "react-emotion": "^9.1.3"
+    "react-emotion": "^9.1.3",
+    "tslib": "^1.9.2"
   }
 }
