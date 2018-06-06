@@ -1,145 +1,26 @@
 import * as React from 'react'
 import * as Hydux from 'hydux'
 import { css, cx } from 'emotion'
+import * as State from './State'
+import * as Utils from 'utils'
 
-const { Cmd } = Hydux
+export type State = State.State
+export type Actions = State.Actions
+export const init = State.init
+export const actions = State.actions
+type Rect = State.Rect
+type RectLayer = State.RectLayer
+type Line = State.Line
 
-export interface SVGFile {
-  name: string
-  content: string
-}
-
-export interface Rect {
-  left: number
-  top: number
-  width: number
-  height: number
-}
-
-module Rect {
-  export let empty: Rect = {
-    left: 0,
-    top: 0,
-    width: 0,
-    height: 0,
+namespace Marker {
+  export const fontSize = 13
+  export const height = 24
+  export const padding = 5
+  export const margin = 10
+  export function getWidth(num: number) {
+    const charCount = Math.round(num).toString().length + 2
+    return charCount * (Marker.fontSize + 1) + Marker.padding * 2
   }
-}
-
-
-export interface RectLayer {
-  dom: SVGElement
-  rect: Rect
-  lines: Rect[]
-}
-
-export const init = {
-  state: () => ({
-    artboard: null as SVGFile | null,
-    hover: null as RectLayer | null,
-    selected: [] as RectLayer[],
-    containerId: 'artboard_' + Math.random().toString(36).slice(2),
-    rootRect: Rect.empty,
-  }),
-  cmd: () =>
-    Cmd.none,
-}
-
-function clientRectToRect(r: ClientRect | DOMRect): Rect {
-  return {
-    left: r.left,
-    top: r.top,
-    width: r.width,
-    height: r.height,
-  }
-}
-const lineWidth = 2
-
-function calcRectBorderLines(rect: Rect, rootRect: Rect): Rect[] {
-  return [{ // left
-    left: rect.left - lineWidth,
-    top: 0,
-    width: lineWidth,
-    height: rootRect.height,
-  }, { // top
-    left: 0,
-    top: rect.top - lineWidth,
-    width: rootRect.width,
-    height: lineWidth,
-  },{ // right
-    left: rect.left + rect.width,
-    top: 0,
-    width: lineWidth,
-    height: rootRect.height,
-  },{
-    left: 0, // bottom
-    top: rect.top + rect.height,
-    width: rootRect.width,
-    height: lineWidth,
-  }]
-}
-const hoverableTags = new Set(['g', 'svg', 'rect', 'text', 'tspan', 'path', 'image', ''])
-function bindSvgEvents(el: SVGElement, actions: Actions, _rootRect: ClientRect | DOMRect) {
-  const rect = clientRectToRect(el.getBoundingClientRect())
-  const rootRect = clientRectToRect(_rootRect)
-  rect.left -= rootRect.left
-  rect.top -= rootRect.top
-  el.addEventListener('mouseover', () => {
-    actions.handleMouseover({
-      dom: el,
-      rect,
-      lines: calcRectBorderLines(rect, rootRect),
-    })
-  })
-  el.addEventListener('mouseout', () => {
-    actions.handleMouseout()
-  })
-  el.addEventListener('click', () => {
-    actions.handleClick({
-      dom: el,
-      rect,
-      lines: calcRectBorderLines(rect, rootRect),
-    })
-  })
-  for (let i = 0; i < el.children.length; i++) {
-    const node = el.children[i]
-  }
-}
-
-export const actions = {
-  setRootRect: (rect: Rect) => (state: State, actions: Actions): Hydux.AR<State, Actions> => {
-    return { rootRect: rect }
-  },
-  setArtboard: (artboard: SVGFile) => (state: State, actions: Actions): Hydux.AR<State, Actions> => {
-    return [
-      { ...state, artboard, hover: null, selected: [] },
-      Cmd.ofSub(
-        _ => {
-          const wrapper = document.getElementById(state.containerId)!
-          wrapper.innerHTML = artboard.content
-          const svg = wrapper.getElementsByTagName('svg')[0]
-          svg.onload = () => {
-            const rect = svg.getBoundingClientRect()
-            wrapper.style.width = rect.width + 'px'
-            wrapper.style.height = rect.height + 'px'
-            const rootRect = wrapper.getBoundingClientRect()
-            actions.setRootRect({ ...Rect.empty, width: rootRect.width, height: rootRect.height })
-            bindSvgEvents(svg, actions, rootRect)
-          }
-        }
-      )
-    ]
-  },
-  handleMouseover: (layer: RectLayer) => (state: State, actions: Actions): Hydux.AR<State, Actions> => {
-    return { ...state, hover: layer }
-  },
-  handleMouseout: () => (state: State, actions: Actions): Hydux.AR<State, Actions> => {
-    return { ...state, hover: null }
-  },
-  handleClick: (layer: RectLayer) => (state: State, actions: Actions): Hydux.AR<State, Actions> => {
-    const selected = state.selected.filter(s => s.dom !== layer.dom)
-    selected.push(layer)
-    return { ...state, hover: null, selected }
-  },
 }
 
 const rootCss = css`
@@ -151,13 +32,7 @@ const rootCss = css`
   padding: 100px;
 
   & > .wrapper {
-    width: auto;
-    height: auto;
-    margin: 0 auto;
     position: relative;
-    top: 50%;
-    transform: translateY(-50%);
-
     & > .container {
       position: relative;
       width: auto;
@@ -167,102 +42,199 @@ const rootCss = css`
         position: absolute;
         left: 0;
         top: 0;
+        * {
+          pointer-events: all;
+          cursor: pointer;
+        }
       }
     }
 
-    &.indicator {
-      .rect {
+    & > .indicator {
+      &, * {
+        pointer-events: none;
+      }
+      .rect, .line {
         position: absolute;
       }
       .rect {
+        transform: translate(-${State.lineWidth}px, -${State.lineWidth}px);
         &.selected {
-          border: 2px solid red;
+          border: ${State.lineWidth}px solid red;
         }
         &.hover {
-          border: 2px dashed blueviolet;
+          border: ${State.lineWidth}px dashed green;
         }
       }
       .line {
         &.selected {
           background-color: red;
+          border: 0 dashed red;
         }
         &.hover {
-          background-color: blueviolet;
+          background-color: green;
+          border: 0 solid green;
+        }
+        &.dashed {
+          background-color: transparent;
+        }
+      }
+      .rect.selected, .line.hover {
+        &::before,
+        &::after {
+          display: inline-block;
+          padding: 4px 6px;
+          background: orangered;
+          color: white;
+          font-size: 12px;
+          line-height: 1;
+          position: absolute;
+          border-radius: 5px;
+        }
+        &::before {
+          top: -30px;
+          left: 50%;
+          transform: translateX(-50%);
+        }
+        &::after {
+          left: 0;
+          top: 50%;
+          transform: translate(-120%, -50%);
+        }
+      }
+      .rect.selected {
+        &::before {
+          content: attr(data-width);
+        }
+        &::after {
+          content: attr(data-height);
+        }
+      }
+      .line.hover {
+        &[data-direction="horizon"]::before {
+          content: attr(data-length);
+        }
+        &[data-direction="vertical"]::after {
+          content: attr(data-length);
         }
       }
     }
   }
 `
-export interface Line {
-  rect: Rect
-  length: number
-}
 
-function renderHoverLines(hover: RectLayer | null, selected: RectLayer[], rootRect: Rect) {
-  if (!hover) {
-    return null
+function caleDistanceLines(hover: RectLayer | null, selected: RectLayer | null, rootRect: Rect): Line[] {
+  if (!hover || !selected) {
+    return []
   }
 
   let hoverLines = [] as Line[]
   const hoverRect = hover.rect
 
-  function calcLine(line: Rect, rect: Rect, isX: boolean) {
-    const start = isX ? 'left' : 'top' as 'left' | 'top'
-    const size = isX ? 'width' : 'height' as 'width' | 'height'
+  function initLine(): Rect {
+    return {
+      left: hoverRect.left + (hoverRect.width - State.lineWidth) / 2,
+      top: hoverRect.top + (hoverRect.height - State.lineWidth) / 2,
+      width: State.lineWidth,
+      height: State.lineWidth,
+    }
+  }
+
+  function calcLine(lines: Line[], rect: Rect, direction: 'horizon' | 'vertical') {
+    let start = direction === 'horizon'
+      ? 'left'
+      : 'top' as 'left' | 'top'
+    let size = direction === 'horizon'
+      ? 'width'
+      : 'height' as 'width' | 'height'
+
+    const line = initLine()
+    const debug = type => console.debug(type, line, hoverRect, rect)
+    let extraLine = null as Rect | null
     if (
-      hoverRect[start] > rect[start] &&
-      hoverRect[start] + hoverRect[size]  < rect[start] + rect[size]
-    ) { // in
+      hoverRect[start] >= rect[start] &&
+      hoverRect[start] + hoverRect[size] <= rect[start] + rect[size]
+    ) { // inner
       line[start] = rect[start]
       line[size] = hoverRect[start] - rect[start]
-    } else if (hoverRect[start] > rect[start]) { // right/bottom
-      line[start] = rect[start] + rect.width
-      line[size] = hoverRect[start]
+      debug('inner')
+      extraLine = initLine()
+      extraLine[start] = hoverRect[start] + hoverRect[size]
+      extraLine[size] = (rect[start] + rect[size]) - (hoverRect[start] + hoverRect[size])
     } else if (
-      hoverRect[start] + hoverRect[size]  < rect[start] + rect[size]
+      hoverRect[start] <= rect[start] &&
+      hoverRect[start] + hoverRect[size] >= rect[start] + rect[size]
+    ) { // outter
+      line[start] = hoverRect[start]
+      line[size] = rect[start] - hoverRect[start]
+      debug('outter')
+      extraLine = initLine()
+      extraLine[start] = rect[start] + rect[size]
+      extraLine[size] = (hoverRect[start] + hoverRect[size]) - (rect[start] + rect[size])
+    } else if (hoverRect[start] >= rect[start] + rect[size]) { // right/bottom
+      line[start] = rect[start] + rect[size]
+      line[size] = hoverRect[start] - (rect[start] + rect[size])
+      debug('right/bottom')
+    } else if (
+      hoverRect[start] + hoverRect[size] <= rect[start] + rect[size]
     ) { // left/top
       line[start] = hoverRect[start] + hoverRect[size]
       line[size] = rect[start] - hoverRect[start] - hoverRect[size]
+      debug('left/top')
     }
     if (line[size] < 0) {
       line[size] = -line[size]
       line[start] = line[start] - line[start]
     }
+    if (line[size]) {
+      lines.push({
+        rect: line,
+        length: line[size],
+        direction,
+      })
+    }
+    if (extraLine && extraLine[size]) {
+      lines.push({
+        rect: extraLine,
+        length: line[size],
+        direction,
+      })
+    }
   }
+  const { rect, lines } = selected
+  calcLine(hoverLines, rect, 'horizon')
+  calcLine(hoverLines, rect, 'vertical')
+  return hoverLines
+}
 
-  for (const layer of selected) {
-    const { rect, lines } = layer
-    let hoverLineX: Rect = {
-      left: 0,
-      top: hoverRect.top + (hoverRect.height - lineWidth) / 2,
-      width: 0,
-      height: lineWidth,
-    }
-    let hoverLineY: Rect = {
-      left: hoverRect.left + (hoverRect.width - lineWidth) / 2,
-      top: 0,
-      width: lineWidth,
-      height: 0,
-    }
-    calcLine(hoverLineX, rect, true)
-    calcLine(hoverLineY, rect, false)
-    hoverLines.push({
-      rect: hoverLineX,
-      length: Number(hoverLineX.width.toFixed(2)),
-    }, {
-      rect: hoverLineY,
-      length: Number(hoverLineY.height.toFixed(2)),
-    })
+function scaleRect(rect: Rect, scale: number) {
+  return {
+    left: rect.left * scale,
+    top: rect.top * scale,
+    width: rect.width * scale,
+    height: rect.height * scale,
   }
-  return hoverLines.map(
-    (line, i) => (
-      <div
-        className="rect line hover"
-        key={i}
-        style={line.rect}
-        data-length={line.length}
-      />
-    )
+}
+
+function Line(
+  { line, scale, type, dashed }:
+  { line: Line, scale: number, type: string, dashed?: boolean }
+) {
+  const style = scaleRect(line.rect, scale)
+  if (dashed) {
+    if (line.direction === 'horizon') {
+      style['borderBottomWidth'] = style.height
+      style.height = 0
+    } else {
+      style['borderRightWidth'] = style.width
+      style.width = 0
+    }
+  }
+  return (
+    <div
+      className={cx('line', type, dashed && 'dashed')}
+      style={style}
+      data-length={Math.round(line.length) + 'px'}
+      data-direction={line.direction}
+    />
   )
 }
 
@@ -272,37 +244,48 @@ export const view = (state: State, actions: Actions) => {
       <div className="wrapper">
         <div className="container" id={state.containerId} />
         <div className="indicator">
-          {state.selected.map(
-            ({ rect, lines }, i) => [
-              <div
-                key={'rect' + i}
-                className="rect selected"
-                style={rect}
-                data-width={rect.width}
-                data-height={rect.height}
-              />,
-              lines.map(
-                (line, j) => (
-                  <div
-                    key={`line_${i}_${j}`}
-                    className="rect line selected"
-                    style={line}
-                  />
-                )
+          {state.selected && ([
+            <div
+              key={'rect'}
+              className="rect selected"
+              style={scaleRect(state.selected.rect, state.scale)}
+              data-width={Math.round(state.selected.rect.width) + 'px'}
+              data-height={Math.round(state.selected.rect.height) + 'px'}
+            />,
+            state.selected.lines.map(
+              (line, j) => (
+                <Line
+                  key={j}
+                  line={line}
+                  scale={state.scale}
+                  type="selected"
+                />
               )
-            ]
-          )}
+            )
+          ])}
           {state.hover && (
               <div
                 className="rect hover"
-                style={state.hover.rect}
+                style={scaleRect(state.hover.rect, state.scale)}
               />
           )}
-          {renderHoverLines(state.hover, state.selected, state.rootRect)}
+          {caleDistanceLines(
+            state.hover,
+            state.selected,
+            state.rootRect,
+          ).map(
+            (line, i) => (
+              <Line
+                key={i}
+                line={line}
+                scale={state.scale}
+                type="hover"
+                dashed
+              />
+            )
+          )}
         </div>
       </div>
     </div>
   )
 }
-export type Actions = typeof actions
-export type State = ReturnType<typeof init.state>

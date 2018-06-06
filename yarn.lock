@@ -95,11 +95,28 @@
   version "4.7.5"
   resolved "http://registry.npm.taobao.org/@types/pixi.js/download/@types/pixi.js-4.7.5.tgz#098a063f6bd430af58a7a9edb45b33d0bf140909"
 
+"@types/react-dom@^16.0.6":
+  version "16.0.6"
+  resolved "http://registry.npm.taobao.org/@types/react-dom/download/@types/react-dom-16.0.6.tgz#f1a65a4e7be8ed5d123f8b3b9eacc913e35a1a3c"
+  dependencies:
+    "@types/node" "*"
+    "@types/react" "*"
+
+"@types/react@*", "@types/react@^16.3.16":
+  version "16.3.16"
+  resolved "http://registry.npm.taobao.org/@types/react/download/@types/react-16.3.16.tgz#78fc44a90b45701f50c8a7008f733680ba51fc86"
+  dependencies:
+    csstype "^2.2.0"
+
 "@types/shelljs@0.7.0":
   version "0.7.0"
   resolved "http://registry.npm.taobao.org/@types/shelljs/download/@types/shelljs-0.7.0.tgz#229c157c6bc1e67d6b990e6c5e18dbd2ff58cff0"
   dependencies:
     "@types/node" "*"
+
+"@types/tinycolor2@^1.4.0":
+  version "1.4.0"
+  resolved "http://registry.npm.taobao.org/@types/tinycolor2/download/@types/tinycolor2-1.4.0.tgz#77792ebbbe8a1c9b291cb949fafeb7de121c4c6a"
 
 "@webassemblyjs/ast@1.5.9":
   version "1.5.9"
@@ -1438,6 +1455,10 @@ cssom@0.3.x, "cssom@>= 0.3.2 < 0.4.0":
   dependencies:
     cssom "0.3.x"
 
+csstype@^2.2.0:
+  version "2.5.3"
+  resolved "http://registry.npm.taobao.org/csstype/download/csstype-2.5.3.tgz#2504152e6e1cc59b32098b7f5d6a63f16294c1f7"
+
 currently-unhandled@^0.4.1:
   version "0.4.1"
   resolved "http://registry.npm.taobao.org/currently-unhandled/download/currently-unhandled-0.4.1.tgz#988df33feab191ef799a61369dd76c17adf957ea"
@@ -2090,6 +2111,13 @@ figures@^2.0.0:
   resolved "http://registry.npm.taobao.org/figures/download/figures-2.0.0.tgz#3ab1a2d2a62c8bfb431a0c94cb797a2fce27c962"
   dependencies:
     escape-string-regexp "^1.0.5"
+
+file-loader@^1.1.11:
+  version "1.1.11"
+  resolved "http://registry.npm.taobao.org/file-loader/download/file-loader-1.1.11.tgz#6fe886449b0f2a936e43cabaac0cdbfb369506f8"
+  dependencies:
+    loader-utils "^1.0.2"
+    schema-utils "^0.4.5"
 
 fill-range@^4.0.0:
   version "4.0.0"
@@ -4623,6 +4651,10 @@ raw-body@2.3.2:
     iconv-lite "0.4.19"
     unpipe "1.0.0"
 
+raw-loader@^0.5.1:
+  version "0.5.1"
+  resolved "http://registry.npm.taobao.org/raw-loader/download/raw-loader-0.5.1.tgz#0c3d0beaed8a01c966d9787bf778281252a979aa"
+
 rc@^1.0.1, rc@^1.1.6, rc@^1.1.7:
   version "1.2.8"
   resolved "http://registry.npm.taobao.org/rc/download/rc-1.2.8.tgz#cd924bf5200a075b83c188cd6b9e211b7fc0d3ed"
@@ -5553,6 +5585,10 @@ timers-browserify@^2.0.4:
   dependencies:
     setimmediate "^1.0.4"
 
+tinycolor2@^1.4.1:
+  version "1.4.1"
+  resolved "http://registry.npm.taobao.org/tinycolor2/download/tinycolor2-1.4.1.tgz#f4fad333447bc0b07d4dc8e9209d8f39a8ac77e8"
+
 tmp@^0.0.33:
   version "0.0.33"
   resolved "http://registry.npm.taobao.org/tmp/download/tmp-0.0.33.tgz#6d34335889768d21b2bcda0aa277ced3b1bfadf9"
@@ -5642,13 +5678,9 @@ ts-node@^6.0.3:
     source-map-support "^0.5.6"
     yn "^2.0.0"
 
-tslib@^1.0.0, tslib@^1.8.0, tslib@^1.8.1, tslib@^1.9.0:
+tslib@^1.0.0, tslib@^1.8.0, tslib@^1.8.1, tslib@^1.9.0, tslib@^1.9.2:
   version "1.9.2"
   resolved "http://registry.npm.taobao.org/tslib/download/tslib-1.9.2.tgz#8be0cc9a1f6dc7727c38deb16c2ebd1a2892988e"
-
-tslib@^1.9.2:
-  version "1.9.2"
-  resolved "https://registry.npmjs.org/tslib/-/tslib-1.9.2.tgz#8be0cc9a1f6dc7727c38deb16c2ebd1a2892988e"
 
 tslint-config-standard@^7.0.0:
   version "7.0.0"

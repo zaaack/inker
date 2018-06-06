@@ -10,7 +10,7 @@ const DIST = `${__dirname}/static/dist/`
 module.exports = {
   mode: process.env.NODE_ENV,
   entry: {
-    bundle: "./src/index.tsx",
+    bundle: "./src/index.js",
   },
   output: {
     filename: "[name].js",
@@ -24,10 +24,11 @@ module.exports = {
   resolve: {
     // Add '.ts' and '.tsx' as resolvable extensions.
     extensions: [".ts", ".tsx", ".js", ".json"],
+    modules: ['node_modules', 'src'],
   },
 
    devServer: {
-     contentBase: './static',
+     contentBase: './',
      hot: true,
      proxy: {
      }
@@ -55,7 +56,12 @@ module.exports = {
         ]
       },
       {
+        test: /test\/fixtures\/.*\.svg$/,
+        use: [ 'raw-loader' ],
+      },
+      {
         test: /\.(png|svg|jpg|gif|woff|woff2|eot|ttf|otf)$/,
+        exclude: /test\/fixtures\//,
         use: [
           {
             loader: 'url-loader',

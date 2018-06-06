@@ -1,16 +1,17 @@
-import _app from 'hydux'
+import * as Hydux from 'hydux'
 import withReact, { React } from 'hydux-react'
 import { ActionsType } from 'hydux/lib/types'
 import * as App from './App'
+import * as mutator from 'hydux-mutator'
+import './types'
 
-// let app = withPersist<State, Actions>({
-//   key: 'time-game/v1'
-// })(_app)
-let app = withReact<State, Actions>(
-  void 0, {
+const { Cmd } = Hydux
+
+let app = withReact<App.State, App.Actions>(
+  document.getElementById('root'), {
     debug: true,
   }
-)(_app)
+)(Hydux.app)
 
 if (process.env.NODE_ENV === 'development') {
   const devTools = require('hydux/lib/enhancers/devtools').default
@@ -21,8 +22,13 @@ if (process.env.NODE_ENV === 'development') {
   app = hmr()(app)
 }
 
-app({
-  init: () => [App.init.state, App.init.cmd()],
+const ctx = app({
+  init: () => [App.init.state(), App.init.cmd()],
   actions: App.actions,
   view: App.view,
 })
+
+if (__DEV__) {
+  window['ctx'] = ctx
+  window['mutator'] = mutator
+}
