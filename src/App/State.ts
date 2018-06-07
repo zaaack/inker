@@ -1,7 +1,7 @@
 import * as Hydux from 'hydux'
 import * as Artboard from './Artboard'
-// const testSvg = require('../test/fixtures/uikit/Food/Category.svg')
-const testSvg = require('../test/fixtures/work/1.svg')
+const testSvg = require('../test/fixtures/uikit/Food/Category.svg')
+// const testSvg = require('../test/fixtures/work/1.svg')
 
 const { Cmd } = Hydux
 

@@ -45,6 +45,7 @@ export const init = {
     containerId: 'artboard_' + Math.random().toString(36).slice(2),
     rootRect: Rect.empty,
     scale: 1,
+    css: '',
   }),
 }
 
@@ -103,11 +104,13 @@ function bindSvgEvents(el: SVGElement, state: State, actions: Actions, rootRect:
   if (!hoverableTags.has(el.tagName)) {
     return
   }
+  const rect = getNodeRect(el, rootRect)
 
   if (
-    el.tagName === 'g'
+    el.tagName === 'g' &&
+    rect.width < 100 &&
+    rect.height < 200
   ) { // Fix SVGGElement cannot click on rect
-    const rect = getNodeRect(el, rootRect)
     let $rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect')
     $rect.setAttribute('x', '0')
     $rect.setAttribute('y', '0')
@@ -121,7 +124,7 @@ function bindSvgEvents(el: SVGElement, state: State, actions: Actions, rootRect:
   }
   {
     const node = el[rectRefKey] || el
-    const rect = getNodeRect(el[rectRefKey] || el, rootRect)
+    const rect = getNodeRect(node, rootRect)
     el.addEventListener('mouseover', e => {
       e.stopPropagation()
       actions.handleMouseover({
@@ -142,7 +145,13 @@ function bindSvgEvents(el: SVGElement, state: State, actions: Actions, rootRect:
         rect,
         lines: calcRectBorderLines(rect, rootRect),
       })
-      Style.getStyle(node, root)
+      const styles = Style.getStyle(node, root)
+      const css = Object.keys(styles).reduce(
+        (acc, k) => {
+          return acc + `${k}: ${styles[k]};\n`
+        }, ''
+      )
+      actions.setCss(css)
     }, false)
   }
 
@@ -160,6 +169,9 @@ function bindSvgEvents(el: SVGElement, state: State, actions: Actions, rootRect:
 export const actions = {
   setRootRect: (rect: Rect) => (state: State, actions: Actions): Hydux.AR<State, Actions> => {
     return { rootRect: rect }
+  },
+  setCss: (css: string) => (state: State, actions: Actions): Hydux.AR<State, Actions> => {
+    return { css }
   },
   setArtboard: (artboard: SVGFile) => (state: State, actions: Actions): Hydux.AR<State, Actions> => {
     return [

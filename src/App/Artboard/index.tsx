@@ -91,7 +91,7 @@ const rootCss = css`
           border-radius: 5px;
         }
         &::before {
-          top: -30px;
+          top: -26px;
           left: 50%;
           transform: translateX(-50%);
         }
@@ -118,6 +118,15 @@ const rootCss = css`
         }
       }
     }
+  }
+  .css {
+    position: fixed;
+    right: 50px;
+    top: 50px;
+    white-space: pre-wrap;
+    background: white;
+    font-size: 14px;
+    width: 200px;
   }
 `
 
@@ -286,6 +295,7 @@ export const view = (state: State, actions: Actions) => {
           )}
         </div>
       </div>
+      <div className="css">{state.css}</div>
     </div>
   )
 }

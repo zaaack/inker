@@ -30,6 +30,7 @@ export declare const init: {
         containerId: string;
         rootRect: Rect;
         scale: number;
+        css: string;
     };
 };
 export declare const lineWidth = 2;
@@ -41,6 +42,7 @@ export declare const actions: {
         containerId: string;
         rootRect: Rect;
         scale: number;
+        css: string;
     }, actions: any) => Hydux.ActionResult<{
         artboard: SVGFile | null;
         hover: RectLayer | null;
@@ -48,6 +50,24 @@ export declare const actions: {
         containerId: string;
         rootRect: Rect;
         scale: number;
+        css: string;
+    }, any>;
+    setCss: (css: string) => (state: {
+        artboard: SVGFile | null;
+        hover: RectLayer | null;
+        selected: RectLayer | null;
+        containerId: string;
+        rootRect: Rect;
+        scale: number;
+        css: string;
+    }, actions: any) => Hydux.ActionResult<{
+        artboard: SVGFile | null;
+        hover: RectLayer | null;
+        selected: RectLayer | null;
+        containerId: string;
+        rootRect: Rect;
+        scale: number;
+        css: string;
     }, any>;
     setArtboard: (artboard: SVGFile) => (state: {
         artboard: SVGFile | null;
@@ -56,6 +76,7 @@ export declare const actions: {
         containerId: string;
         rootRect: Rect;
         scale: number;
+        css: string;
     }, actions: any) => Hydux.ActionResult<{
         artboard: SVGFile | null;
         hover: RectLayer | null;
@@ -63,6 +84,7 @@ export declare const actions: {
         containerId: string;
         rootRect: Rect;
         scale: number;
+        css: string;
     }, any>;
     setScale: (scale: number) => (state: {
         artboard: SVGFile | null;
@@ -71,6 +93,7 @@ export declare const actions: {
         containerId: string;
         rootRect: Rect;
         scale: number;
+        css: string;
     }, actions: any) => Hydux.ActionResult<{
         artboard: SVGFile | null;
         hover: RectLayer | null;
@@ -78,6 +101,7 @@ export declare const actions: {
         containerId: string;
         rootRect: Rect;
         scale: number;
+        css: string;
     }, any>;
     handleMouseover: (layer: RectLayer) => (state: {
         artboard: SVGFile | null;
@@ -86,6 +110,7 @@ export declare const actions: {
         containerId: string;
         rootRect: Rect;
         scale: number;
+        css: string;
     }, actions: any) => Hydux.ActionResult<{
         artboard: SVGFile | null;
         hover: RectLayer | null;
@@ -93,6 +118,7 @@ export declare const actions: {
         containerId: string;
         rootRect: Rect;
         scale: number;
+        css: string;
     }, any>;
     handleMouseout: () => (state: {
         artboard: SVGFile | null;
@@ -101,6 +127,7 @@ export declare const actions: {
         containerId: string;
         rootRect: Rect;
         scale: number;
+        css: string;
     }, actions: any) => Hydux.ActionResult<{
         artboard: SVGFile | null;
         hover: RectLayer | null;
@@ -108,6 +135,7 @@ export declare const actions: {
         containerId: string;
         rootRect: Rect;
         scale: number;
+        css: string;
     }, any>;
     handleClick: (selected: RectLayer | null) => (state: {
         artboard: SVGFile | null;
@@ -116,6 +144,7 @@ export declare const actions: {
         containerId: string;
         rootRect: Rect;
         scale: number;
+        css: string;
     }, actions: any) => Hydux.ActionResult<{
         artboard: SVGFile | null;
         hover: RectLayer | null;
@@ -123,6 +152,7 @@ export declare const actions: {
         containerId: string;
         rootRect: Rect;
         scale: number;
+        css: string;
     }, any>;
 };
 export declare type Actions = typeof actions;

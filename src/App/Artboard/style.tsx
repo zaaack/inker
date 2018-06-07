@@ -122,7 +122,7 @@ function transformStyle(
           if (el instanceof SVGLinearGradientElement) {
             const getVal = (e: SVGAnimatedLength) => e.baseVal.value
             const deltaX = getVal(el.x2) - getVal(el.x1)
-            const deltaY = getVal(el.y2) - getVal(el.y2)
+            const deltaY = getVal(el.y2) - getVal(el.y1)
             const cos = deltaY / Math.sqrt(Math.pow(deltaX, 2) + Math.pow(deltaY,2))
             const degree = Math.acos(cos)
             let steps: (string | void)[] = [].map.call(
@@ -132,9 +132,9 @@ function transformStyle(
                 let color = el.getAttribute('stop-color')
                 if (!color || !offset) return
                 let rgba = tinycolor(color)
-                const opacity = Number(el.getAttribute('opacity')) || 1
-                if (opacity !== 1) {
-                  rgba.setAlpha(opacity)
+                const opacity = el.getAttribute('stop-opacity')
+                if (opacity && opacity !== '1') {
+                  rgba.setAlpha(Number(opacity))
                 }
                 return `${rgba.getAlpha() === 1 ? rgba.toHexString() : rgba.toRgbString()} ${offset}`
               }
