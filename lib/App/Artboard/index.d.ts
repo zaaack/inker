@@ -12,6 +12,7 @@ export declare const init: {
         rootRect: State.Rect;
         scale: number;
         css: string;
+        ratio: number;
     };
 };
 export declare const actions: {
@@ -23,6 +24,7 @@ export declare const actions: {
         rootRect: State.Rect;
         scale: number;
         css: string;
+        ratio: number;
     }, actions: any) => Hydux.ActionResult<{
         artboard: State.SVGFile | null;
         hover: State.RectLayer | null;
@@ -31,6 +33,7 @@ export declare const actions: {
         rootRect: State.Rect;
         scale: number;
         css: string;
+        ratio: number;
     }, any>;
     setCss: (css: string) => (state: {
         artboard: State.SVGFile | null;
@@ -40,6 +43,7 @@ export declare const actions: {
         rootRect: State.Rect;
         scale: number;
         css: string;
+        ratio: number;
     }, actions: any) => Hydux.ActionResult<{
         artboard: State.SVGFile | null;
         hover: State.RectLayer | null;
@@ -48,6 +52,7 @@ export declare const actions: {
         rootRect: State.Rect;
         scale: number;
         css: string;
+        ratio: number;
     }, any>;
     setArtboard: (artboard: State.SVGFile) => (state: {
         artboard: State.SVGFile | null;
@@ -57,6 +62,7 @@ export declare const actions: {
         rootRect: State.Rect;
         scale: number;
         css: string;
+        ratio: number;
     }, actions: any) => Hydux.ActionResult<{
         artboard: State.SVGFile | null;
         hover: State.RectLayer | null;
@@ -65,6 +71,7 @@ export declare const actions: {
         rootRect: State.Rect;
         scale: number;
         css: string;
+        ratio: number;
     }, any>;
     setScale: (scale: number) => (state: {
         artboard: State.SVGFile | null;
@@ -74,6 +81,7 @@ export declare const actions: {
         rootRect: State.Rect;
         scale: number;
         css: string;
+        ratio: number;
     }, actions: any) => Hydux.ActionResult<{
         artboard: State.SVGFile | null;
         hover: State.RectLayer | null;
@@ -82,6 +90,7 @@ export declare const actions: {
         rootRect: State.Rect;
         scale: number;
         css: string;
+        ratio: number;
     }, any>;
     handleMouseover: (layer: State.RectLayer) => (state: {
         artboard: State.SVGFile | null;
@@ -91,6 +100,7 @@ export declare const actions: {
         rootRect: State.Rect;
         scale: number;
         css: string;
+        ratio: number;
     }, actions: any) => Hydux.ActionResult<{
         artboard: State.SVGFile | null;
         hover: State.RectLayer | null;
@@ -99,6 +109,7 @@ export declare const actions: {
         rootRect: State.Rect;
         scale: number;
         css: string;
+        ratio: number;
     }, any>;
     handleMouseout: () => (state: {
         artboard: State.SVGFile | null;
@@ -108,6 +119,7 @@ export declare const actions: {
         rootRect: State.Rect;
         scale: number;
         css: string;
+        ratio: number;
     }, actions: any) => Hydux.ActionResult<{
         artboard: State.SVGFile | null;
         hover: State.RectLayer | null;
@@ -116,6 +128,7 @@ export declare const actions: {
         rootRect: State.Rect;
         scale: number;
         css: string;
+        ratio: number;
     }, any>;
     handleClick: (selected: State.RectLayer | null) => (state: {
         artboard: State.SVGFile | null;
@@ -125,6 +138,7 @@ export declare const actions: {
         rootRect: State.Rect;
         scale: number;
         css: string;
+        ratio: number;
     }, actions: any) => Hydux.ActionResult<{
         artboard: State.SVGFile | null;
         hover: State.RectLayer | null;
@@ -133,6 +147,7 @@ export declare const actions: {
         rootRect: State.Rect;
         scale: number;
         css: string;
+        ratio: number;
     }, any>;
 };
 export declare const view: (state: {
@@ -143,6 +158,7 @@ export declare const view: (state: {
     rootRect: State.Rect;
     scale: number;
     css: string;
+    ratio: number;
 }, actions: {
     setRootRect: (rect: State.Rect) => (state: {
         artboard: State.SVGFile | null;
@@ -152,6 +168,7 @@ export declare const view: (state: {
         rootRect: State.Rect;
         scale: number;
         css: string;
+        ratio: number;
     }, actions: any) => Hydux.ActionResult<{
         artboard: State.SVGFile | null;
         hover: State.RectLayer | null;
@@ -160,6 +177,7 @@ export declare const view: (state: {
         rootRect: State.Rect;
         scale: number;
         css: string;
+        ratio: number;
     }, any>;
     setCss: (css: string) => (state: {
         artboard: State.SVGFile | null;
@@ -169,6 +187,7 @@ export declare const view: (state: {
         rootRect: State.Rect;
         scale: number;
         css: string;
+        ratio: number;
     }, actions: any) => Hydux.ActionResult<{
         artboard: State.SVGFile | null;
         hover: State.RectLayer | null;
@@ -177,6 +196,7 @@ export declare const view: (state: {
         rootRect: State.Rect;
         scale: number;
         css: string;
+        ratio: number;
     }, any>;
     setArtboard: (artboard: State.SVGFile) => (state: {
         artboard: State.SVGFile | null;
@@ -186,6 +206,7 @@ export declare const view: (state: {
         rootRect: State.Rect;
         scale: number;
         css: string;
+        ratio: number;
     }, actions: any) => Hydux.ActionResult<{
         artboard: State.SVGFile | null;
         hover: State.RectLayer | null;
@@ -194,6 +215,7 @@ export declare const view: (state: {
         rootRect: State.Rect;
         scale: number;
         css: string;
+        ratio: number;
     }, any>;
     setScale: (scale: number) => (state: {
         artboard: State.SVGFile | null;
@@ -203,6 +225,7 @@ export declare const view: (state: {
         rootRect: State.Rect;
         scale: number;
         css: string;
+        ratio: number;
     }, actions: any) => Hydux.ActionResult<{
         artboard: State.SVGFile | null;
         hover: State.RectLayer | null;
@@ -211,6 +234,7 @@ export declare const view: (state: {
         rootRect: State.Rect;
         scale: number;
         css: string;
+        ratio: number;
     }, any>;
     handleMouseover: (layer: State.RectLayer) => (state: {
         artboard: State.SVGFile | null;
@@ -220,6 +244,7 @@ export declare const view: (state: {
         rootRect: State.Rect;
         scale: number;
         css: string;
+        ratio: number;
     }, actions: any) => Hydux.ActionResult<{
         artboard: State.SVGFile | null;
         hover: State.RectLayer | null;
@@ -228,6 +253,7 @@ export declare const view: (state: {
         rootRect: State.Rect;
         scale: number;
         css: string;
+        ratio: number;
     }, any>;
     handleMouseout: () => (state: {
         artboard: State.SVGFile | null;
@@ -237,6 +263,7 @@ export declare const view: (state: {
         rootRect: State.Rect;
         scale: number;
         css: string;
+        ratio: number;
     }, actions: any) => Hydux.ActionResult<{
         artboard: State.SVGFile | null;
         hover: State.RectLayer | null;
@@ -245,6 +272,7 @@ export declare const view: (state: {
         rootRect: State.Rect;
         scale: number;
         css: string;
+        ratio: number;
     }, any>;
     handleClick: (selected: State.RectLayer | null) => (state: {
         artboard: State.SVGFile | null;
@@ -254,6 +282,7 @@ export declare const view: (state: {
         rootRect: State.Rect;
         scale: number;
         css: string;
+        ratio: number;
     }, actions: any) => Hydux.ActionResult<{
         artboard: State.SVGFile | null;
         hover: State.RectLayer | null;
@@ -262,5 +291,6 @@ export declare const view: (state: {
         rootRect: State.Rect;
         scale: number;
         css: string;
+        ratio: number;
     }, any>;
 }) => JSX.Element;

@@ -1,0 +1,25 @@
+<?xml version="1.0" standalone="no"?>
+<!-- Generator: Gravit.io -->
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="isolation:isolate" viewBox="0 0 375 812"
+    width="375" height="812">
+    <defs>
+        <clipPath id="_clipPath_Qyn1yFq5tHVzjgSgFq20xwrQ5ykO3nnZ">
+            <rect width="375" height="812" />
+        </clipPath>
+    </defs>
+    <g clip-path="url(#_clipPath_Qyn1yFq5tHVzjgSgFq20xwrQ5ykO3nnZ)">
+        <defs>
+            <filter id="qgiKE7fh5JdiNPOIOIeG1Zx86UbzgvjK" x="-200%" y="-200%" width="400%" height="400%">
+                <feOffset xmlns="http://www.w3.org/2000/svg" in="SourceAlpha" result="offOut" dx="1" dy="2" />
+                <feGaussianBlur xmlns="http://www.w3.org/2000/svg" in="offOut" result="blurOut" stdDeviation="2.5" />
+                <feComponentTransfer xmlns="http://www.w3.org/2000/svg" in="blurOut" result="opacOut">
+                    <feFuncA xmlns="http://www.w3.org/2000/svg" type="table" tableValues="0 0.5" />
+                </feComponentTransfer>
+                <feBlend xmlns="http://www.w3.org/2000/svg" in="SourceGraphic" in2="opacOut" mode="normal" />
+            </filter>
+        </defs>
+        <g filter="url(#qgiKE7fh5JdiNPOIOIeG1Zx86UbzgvjK)">
+            <rect x="95" y="177" width="103" height="68" transform="matrix(1,0,0,1,0,0)" fill="rgb(235,235,235)" />
+        </g>
+    </g>
+</svg>

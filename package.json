@@ -9,7 +9,7 @@
     "start": "NODE_ENV=development webpack-dev-server --config ./webpack.config.js",
     "build": "del lib && tsc",
     "build:dist": "NODE_ENV=production webpack",
-    "test": "mocha --require ts-node/register \"src/test/**/*.test.ts\" --exit",
+    "test": "electron-mocha --renderer -r tsconfig-paths/register -r ts-node/register \"src/test/**.test.ts\"",
     "nyc": "nyc --extension .tsx --extension .ts --require ts-node/register -r html npm run test",
     "test:watch": "npm run test -- -w --watch-extensions ts,tsx",
     "doc": "typedoc --theme minimal --out ./docs --exclude ./test ./src && touch ./docs/.nojekyll",
@@ -38,9 +38,13 @@
     "url": "https://github.com/hydux/hydux-pixi/issues"
   },
   "homepage": "https://github.com/hydux/hydux-pixi#readme",
+  "config": {
+    "puppeteer_skip_chromium_download": true
+  },
   "devDependencies": {
     "@types/htmlparser2": "^3.7.31",
     "@types/lodash": "^4.14.109",
+    "@types/mathjs": "^3.21.0",
     "@types/mocha": "^2.2.44",
     "@types/node": "^8.0.56",
     "@types/pixi.js": "^4.7.3",
@@ -53,9 +57,12 @@
     "css-loader": "^0.28.11",
     "debug": "^3.1.0",
     "del-cli": "^1.1.0",
+    "electron": "^2.0.2",
+    "electron-mocha": "^6.0.3",
     "file-loader": "^1.1.11",
     "jsdom": "^11.10.0",
     "mocha": "^4.0.1",
+    "mochify": "^5.8.0",
     "nyc": "^11.8.0",
     "power-assert": "^1.4.4",
     "pre-commit": "^1.2.2",
@@ -63,6 +70,7 @@
     "source-map-loader": "^0.2.3",
     "style-loader": "^0.21.0",
     "ts-node": "^6.0.3",
+    "tsconfig-paths": "^3.3.2",
     "tslint": "^5.10.0",
     "tslint-config-standard": "^7.0.0",
     "typedoc": "^0.9.0",
@@ -79,6 +87,7 @@
     "hydux-mutator": "^0.1.11",
     "hydux-pixi": "^0.1.0",
     "hydux-react": "^0.3.1",
+    "mathjs": "^4.4.2",
     "react-emotion": "^9.1.3",
     "tinycolor2": "^1.4.1",
     "tslib": "^1.9.2"

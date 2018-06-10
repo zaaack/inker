@@ -11,6 +11,7 @@ export declare const init: {
             rootRect: import("./Artboard/State").Rect;
             scale: number;
             css: string;
+            ratio: number;
         };
     };
     cmd: () => Hydux.Sub<{
@@ -23,6 +24,7 @@ export declare const init: {
                 rootRect: import("./Artboard/State").Rect;
                 scale: number;
                 css: string;
+                ratio: number;
             }, actions: any) => Hydux.ActionResult<{
                 artboard: import("./Artboard/State").SVGFile | null;
                 hover: import("./Artboard/State").RectLayer | null;
@@ -31,6 +33,7 @@ export declare const init: {
                 rootRect: import("./Artboard/State").Rect;
                 scale: number;
                 css: string;
+                ratio: number;
             }, any>;
             setCss: (css: string) => (state: {
                 artboard: import("./Artboard/State").SVGFile | null;
@@ -40,6 +43,7 @@ export declare const init: {
                 rootRect: import("./Artboard/State").Rect;
                 scale: number;
                 css: string;
+                ratio: number;
             }, actions: any) => Hydux.ActionResult<{
                 artboard: import("./Artboard/State").SVGFile | null;
                 hover: import("./Artboard/State").RectLayer | null;
@@ -48,6 +52,7 @@ export declare const init: {
                 rootRect: import("./Artboard/State").Rect;
                 scale: number;
                 css: string;
+                ratio: number;
             }, any>;
             setArtboard: (artboard: import("./Artboard/State").SVGFile) => (state: {
                 artboard: import("./Artboard/State").SVGFile | null;
@@ -57,6 +62,7 @@ export declare const init: {
                 rootRect: import("./Artboard/State").Rect;
                 scale: number;
                 css: string;
+                ratio: number;
             }, actions: any) => Hydux.ActionResult<{
                 artboard: import("./Artboard/State").SVGFile | null;
                 hover: import("./Artboard/State").RectLayer | null;
@@ -65,6 +71,7 @@ export declare const init: {
                 rootRect: import("./Artboard/State").Rect;
                 scale: number;
                 css: string;
+                ratio: number;
             }, any>;
             setScale: (scale: number) => (state: {
                 artboard: import("./Artboard/State").SVGFile | null;
@@ -74,6 +81,7 @@ export declare const init: {
                 rootRect: import("./Artboard/State").Rect;
                 scale: number;
                 css: string;
+                ratio: number;
             }, actions: any) => Hydux.ActionResult<{
                 artboard: import("./Artboard/State").SVGFile | null;
                 hover: import("./Artboard/State").RectLayer | null;
@@ -82,6 +90,7 @@ export declare const init: {
                 rootRect: import("./Artboard/State").Rect;
                 scale: number;
                 css: string;
+                ratio: number;
             }, any>;
             handleMouseover: (layer: import("./Artboard/State").RectLayer) => (state: {
                 artboard: import("./Artboard/State").SVGFile | null;
@@ -91,6 +100,7 @@ export declare const init: {
                 rootRect: import("./Artboard/State").Rect;
                 scale: number;
                 css: string;
+                ratio: number;
             }, actions: any) => Hydux.ActionResult<{
                 artboard: import("./Artboard/State").SVGFile | null;
                 hover: import("./Artboard/State").RectLayer | null;
@@ -99,6 +109,7 @@ export declare const init: {
                 rootRect: import("./Artboard/State").Rect;
                 scale: number;
                 css: string;
+                ratio: number;
             }, any>;
             handleMouseout: () => (state: {
                 artboard: import("./Artboard/State").SVGFile | null;
@@ -108,6 +119,7 @@ export declare const init: {
                 rootRect: import("./Artboard/State").Rect;
                 scale: number;
                 css: string;
+                ratio: number;
             }, actions: any) => Hydux.ActionResult<{
                 artboard: import("./Artboard/State").SVGFile | null;
                 hover: import("./Artboard/State").RectLayer | null;
@@ -116,6 +128,7 @@ export declare const init: {
                 rootRect: import("./Artboard/State").Rect;
                 scale: number;
                 css: string;
+                ratio: number;
             }, any>;
             handleClick: (selected: import("./Artboard/State").RectLayer | null) => (state: {
                 artboard: import("./Artboard/State").SVGFile | null;
@@ -125,6 +138,7 @@ export declare const init: {
                 rootRect: import("./Artboard/State").Rect;
                 scale: number;
                 css: string;
+                ratio: number;
             }, actions: any) => Hydux.ActionResult<{
                 artboard: import("./Artboard/State").SVGFile | null;
                 hover: import("./Artboard/State").RectLayer | null;
@@ -133,6 +147,7 @@ export declare const init: {
                 rootRect: import("./Artboard/State").Rect;
                 scale: number;
                 css: string;
+                ratio: number;
             }, any>;
         };
         update: () => (state: {
@@ -144,6 +159,7 @@ export declare const init: {
                 rootRect: import("./Artboard/State").Rect;
                 scale: number;
                 css: string;
+                ratio: number;
             };
         }, actions: any) => Hydux.ActionResult<{
             artboard: {
@@ -154,6 +170,7 @@ export declare const init: {
                 rootRect: import("./Artboard/State").Rect;
                 scale: number;
                 css: string;
+                ratio: number;
             };
         }, any>;
     }>[];
@@ -168,6 +185,7 @@ export declare const actions: {
             rootRect: import("./Artboard/State").Rect;
             scale: number;
             css: string;
+            ratio: number;
         }, actions: any) => Hydux.ActionResult<{
             artboard: import("./Artboard/State").SVGFile | null;
             hover: import("./Artboard/State").RectLayer | null;
@@ -176,6 +194,7 @@ export declare const actions: {
             rootRect: import("./Artboard/State").Rect;
             scale: number;
             css: string;
+            ratio: number;
         }, any>;
         setCss: (css: string) => (state: {
             artboard: import("./Artboard/State").SVGFile | null;
@@ -185,6 +204,7 @@ export declare const actions: {
             rootRect: import("./Artboard/State").Rect;
             scale: number;
             css: string;
+            ratio: number;
         }, actions: any) => Hydux.ActionResult<{
             artboard: import("./Artboard/State").SVGFile | null;
             hover: import("./Artboard/State").RectLayer | null;
@@ -193,6 +213,7 @@ export declare const actions: {
             rootRect: import("./Artboard/State").Rect;
             scale: number;
             css: string;
+            ratio: number;
         }, any>;
         setArtboard: (artboard: import("./Artboard/State").SVGFile) => (state: {
             artboard: import("./Artboard/State").SVGFile | null;
@@ -202,6 +223,7 @@ export declare const actions: {
             rootRect: import("./Artboard/State").Rect;
             scale: number;
             css: string;
+            ratio: number;
         }, actions: any) => Hydux.ActionResult<{
             artboard: import("./Artboard/State").SVGFile | null;
             hover: import("./Artboard/State").RectLayer | null;
@@ -210,6 +232,7 @@ export declare const actions: {
             rootRect: import("./Artboard/State").Rect;
             scale: number;
             css: string;
+            ratio: number;
         }, any>;
         setScale: (scale: number) => (state: {
             artboard: import("./Artboard/State").SVGFile | null;
@@ -219,6 +242,7 @@ export declare const actions: {
             rootRect: import("./Artboard/State").Rect;
             scale: number;
             css: string;
+            ratio: number;
         }, actions: any) => Hydux.ActionResult<{
             artboard: import("./Artboard/State").SVGFile | null;
             hover: import("./Artboard/State").RectLayer | null;
@@ -227,6 +251,7 @@ export declare const actions: {
             rootRect: import("./Artboard/State").Rect;
             scale: number;
             css: string;
+            ratio: number;
         }, any>;
         handleMouseover: (layer: import("./Artboard/State").RectLayer) => (state: {
             artboard: import("./Artboard/State").SVGFile | null;
@@ -236,6 +261,7 @@ export declare const actions: {
             rootRect: import("./Artboard/State").Rect;
             scale: number;
             css: string;
+            ratio: number;
         }, actions: any) => Hydux.ActionResult<{
             artboard: import("./Artboard/State").SVGFile | null;
             hover: import("./Artboard/State").RectLayer | null;
@@ -244,6 +270,7 @@ export declare const actions: {
             rootRect: import("./Artboard/State").Rect;
             scale: number;
             css: string;
+            ratio: number;
         }, any>;
         handleMouseout: () => (state: {
             artboard: import("./Artboard/State").SVGFile | null;
@@ -253,6 +280,7 @@ export declare const actions: {
             rootRect: import("./Artboard/State").Rect;
             scale: number;
             css: string;
+            ratio: number;
         }, actions: any) => Hydux.ActionResult<{
             artboard: import("./Artboard/State").SVGFile | null;
             hover: import("./Artboard/State").RectLayer | null;
@@ -261,6 +289,7 @@ export declare const actions: {
             rootRect: import("./Artboard/State").Rect;
             scale: number;
             css: string;
+            ratio: number;
         }, any>;
         handleClick: (selected: import("./Artboard/State").RectLayer | null) => (state: {
             artboard: import("./Artboard/State").SVGFile | null;
@@ -270,6 +299,7 @@ export declare const actions: {
             rootRect: import("./Artboard/State").Rect;
             scale: number;
             css: string;
+            ratio: number;
         }, actions: any) => Hydux.ActionResult<{
             artboard: import("./Artboard/State").SVGFile | null;
             hover: import("./Artboard/State").RectLayer | null;
@@ -278,6 +308,7 @@ export declare const actions: {
             rootRect: import("./Artboard/State").Rect;
             scale: number;
             css: string;
+            ratio: number;
         }, any>;
     };
     update: () => (state: {
@@ -289,6 +320,7 @@ export declare const actions: {
             rootRect: import("./Artboard/State").Rect;
             scale: number;
             css: string;
+            ratio: number;
         };
     }, actions: any) => Hydux.ActionResult<{
         artboard: {
@@ -299,6 +331,7 @@ export declare const actions: {
             rootRect: import("./Artboard/State").Rect;
             scale: number;
             css: string;
+            ratio: number;
         };
     }, any>;
 };
@@ -313,6 +346,7 @@ export declare const view: (state: {
         rootRect: import("./Artboard/State").Rect;
         scale: number;
         css: string;
+        ratio: number;
     };
 }, actions: {
     artboard: {
@@ -324,6 +358,7 @@ export declare const view: (state: {
             rootRect: import("./Artboard/State").Rect;
             scale: number;
             css: string;
+            ratio: number;
         }, actions: any) => Hydux.ActionResult<{
             artboard: import("./Artboard/State").SVGFile | null;
             hover: import("./Artboard/State").RectLayer | null;
@@ -332,6 +367,7 @@ export declare const view: (state: {
             rootRect: import("./Artboard/State").Rect;
             scale: number;
             css: string;
+            ratio: number;
         }, any>;
         setCss: (css: string) => (state: {
             artboard: import("./Artboard/State").SVGFile | null;
@@ -341,6 +377,7 @@ export declare const view: (state: {
             rootRect: import("./Artboard/State").Rect;
             scale: number;
             css: string;
+            ratio: number;
         }, actions: any) => Hydux.ActionResult<{
             artboard: import("./Artboard/State").SVGFile | null;
             hover: import("./Artboard/State").RectLayer | null;
@@ -349,6 +386,7 @@ export declare const view: (state: {
             rootRect: import("./Artboard/State").Rect;
             scale: number;
             css: string;
+            ratio: number;
         }, any>;
         setArtboard: (artboard: import("./Artboard/State").SVGFile) => (state: {
             artboard: import("./Artboard/State").SVGFile | null;
@@ -358,6 +396,7 @@ export declare const view: (state: {
             rootRect: import("./Artboard/State").Rect;
             scale: number;
             css: string;
+            ratio: number;
         }, actions: any) => Hydux.ActionResult<{
             artboard: import("./Artboard/State").SVGFile | null;
             hover: import("./Artboard/State").RectLayer | null;
@@ -366,6 +405,7 @@ export declare const view: (state: {
             rootRect: import("./Artboard/State").Rect;
             scale: number;
             css: string;
+            ratio: number;
         }, any>;
         setScale: (scale: number) => (state: {
             artboard: import("./Artboard/State").SVGFile | null;
@@ -375,6 +415,7 @@ export declare const view: (state: {
             rootRect: import("./Artboard/State").Rect;
             scale: number;
             css: string;
+            ratio: number;
         }, actions: any) => Hydux.ActionResult<{
             artboard: import("./Artboard/State").SVGFile | null;
             hover: import("./Artboard/State").RectLayer | null;
@@ -383,6 +424,7 @@ export declare const view: (state: {
             rootRect: import("./Artboard/State").Rect;
             scale: number;
             css: string;
+            ratio: number;
         }, any>;
         handleMouseover: (layer: import("./Artboard/State").RectLayer) => (state: {
             artboard: import("./Artboard/State").SVGFile | null;
@@ -392,6 +434,7 @@ export declare const view: (state: {
             rootRect: import("./Artboard/State").Rect;
             scale: number;
             css: string;
+            ratio: number;
         }, actions: any) => Hydux.ActionResult<{
             artboard: import("./Artboard/State").SVGFile | null;
             hover: import("./Artboard/State").RectLayer | null;
@@ -400,6 +443,7 @@ export declare const view: (state: {
             rootRect: import("./Artboard/State").Rect;
             scale: number;
             css: string;
+            ratio: number;
         }, any>;
         handleMouseout: () => (state: {
             artboard: import("./Artboard/State").SVGFile | null;
@@ -409,6 +453,7 @@ export declare const view: (state: {
             rootRect: import("./Artboard/State").Rect;
             scale: number;
             css: string;
+            ratio: number;
         }, actions: any) => Hydux.ActionResult<{
             artboard: import("./Artboard/State").SVGFile | null;
             hover: import("./Artboard/State").RectLayer | null;
@@ -417,6 +462,7 @@ export declare const view: (state: {
             rootRect: import("./Artboard/State").Rect;
             scale: number;
             css: string;
+            ratio: number;
         }, any>;
         handleClick: (selected: import("./Artboard/State").RectLayer | null) => (state: {
             artboard: import("./Artboard/State").SVGFile | null;
@@ -426,6 +472,7 @@ export declare const view: (state: {
             rootRect: import("./Artboard/State").Rect;
             scale: number;
             css: string;
+            ratio: number;
         }, actions: any) => Hydux.ActionResult<{
             artboard: import("./Artboard/State").SVGFile | null;
             hover: import("./Artboard/State").RectLayer | null;
@@ -434,6 +481,7 @@ export declare const view: (state: {
             rootRect: import("./Artboard/State").Rect;
             scale: number;
             css: string;
+            ratio: number;
         }, any>;
     };
     update: () => (state: {
@@ -445,6 +493,7 @@ export declare const view: (state: {
             rootRect: import("./Artboard/State").Rect;
             scale: number;
             css: string;
+            ratio: number;
         };
     }, actions: any) => Hydux.ActionResult<{
         artboard: {
@@ -455,6 +504,7 @@ export declare const view: (state: {
             rootRect: import("./Artboard/State").Rect;
             scale: number;
             css: string;
+            ratio: number;
         };
     }, any>;
 }) => JSX.Element;

@@ -46,6 +46,7 @@ export const init = {
     rootRect: Rect.empty,
     scale: 1,
     css: '',
+    ratio: 1
   }),
 }
 
@@ -93,13 +94,15 @@ function calcRectBorderLines(rect: Rect, rootRect: Rect): Line[] {
 }
 const hoverableTags = new Set(['g', 'svg', 'rect', 'text', 'tspan', 'path', 'image', 'circle', 'clipPath', 'ellipse', 'a', 'line', 'marker', 'polygon', 'polygon', 'polyline'])
 
-function getNodeRect(el: SVGElement, rootRect: Rect) {
+export function getNodeRect(el: SVGElement, rootRect: Rect) {
   const rect = clientRectToRect(el.getBoundingClientRect())
   rect.left -= rootRect.left
   rect.top -= rootRect.top
   return rect
 }
+
 const rectRefKey = '@svg-measure/refG'
+const rectKey = '@svg-measure/rect'
 function bindSvgEvents(el: SVGElement, state: State, actions: Actions, rootRect: Rect, root: SVGSVGElement) {
   if (!hoverableTags.has(el.tagName)) {
     return
@@ -123,7 +126,7 @@ function bindSvgEvents(el: SVGElement, state: State, actions: Actions, rootRect:
     el.insertBefore($rect, el.children[0])
   }
   {
-    const node = el[rectRefKey] || el
+    let node = el[rectRefKey] || el
     const rect = getNodeRect(node, rootRect)
     el.addEventListener('mouseover', e => {
       e.stopPropagation()
@@ -145,12 +148,7 @@ function bindSvgEvents(el: SVGElement, state: State, actions: Actions, rootRect:
         rect,
         lines: calcRectBorderLines(rect, rootRect),
       })
-      const styles = Style.getStyle(node, root)
-      const css = Object.keys(styles).reduce(
-        (acc, k) => {
-          return acc + `${k}: ${styles[k]};\n`
-        }, ''
-      )
+      const css = Style.getCss(node, rect, root)
       actions.setCss(css)
     }, false)
   }

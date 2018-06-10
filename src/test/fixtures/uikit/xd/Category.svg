@@ -311,7 +311,7 @@
             <rect id="Background" fill="url(#pattern-27)" fill-rule="evenodd" mask="url(#mask-25)" x="0" y="0" width="343" height="160"></rect>
             <g id="Overrides/Card/Description" mask="url(#mask-25)" fill-rule="evenodd">
                 <g transform="translate(0.000000, 86.000000)">
-                    <rect id="Background" fill-opacity="0.3" fill="url(#linearGradient-6)" x="0" y="0" width="343" height="74"></rect>
+                    <rect id="test2" fill-opacity="0.3" fill="url(#linearGradient-6)" x="0" y="0" width="343" height="74"></rect>
                     <g id="Content" filter="url(#filter-29)" stroke-width="1" fill="none" transform="translate(16.000000, 16.000000)" font-family=".AppleSystemUIFont" font-size="16" font-weight="normal" letter-spacing="-0.319999993" line-spacing="21">
                         <text id="Description" fill="#FFFFFF">
                             <tspan x="0" y="15">2 people </tspan>
@@ -322,10 +322,10 @@
                 </g>
             </g>
             <g id="Overrides/Card/Title" mask="url(#mask-25)" fill-rule="evenodd">
-                <rect id="Background" fill-opacity="0.3" fill="url(#linearGradient-8)" x="0" y="0" width="343" height="120"></rect>
+                <rect id="test1" fill-opacity="0.3" fill="url(#linearGradient-8)" x="0" y="0" width="343" height="120"></rect>
                 <g id="Content" filter="url(#filter-30)" stroke-width="1" transform="translate(16.000000, 16.000000)" fill="#FFFFFF" font-family=".SFNSDisplay, .SF NS Display" font-size="28" font-weight="normal" letter-spacing="0.36" line-spacing="34">
                     <text id="Title">
-                        <tspan x="0" y="27">Morning Smoothies</tspan>
+                        <tspan id="test3" x="0" y="27">Morning Smoothies</tspan>
                     </text>
                 </g>
             </g>
