@@ -105,6 +105,10 @@
   version "8.10.18"
   resolved "http://registry.npm.taobao.org/@types/node/download/@types/node-8.10.18.tgz#eb9ad8b0723d13fa9bc8b42543e3661ed805f2bb"
 
+"@types/parse5@^5.0.0":
+  version "5.0.0"
+  resolved "https://registry.npmjs.org/@types/parse5/-/parse5-5.0.0.tgz#9ae2106efc443d7c1e26570aa8247828c9c80f11"
+
 "@types/pixi.js@^4.7.3":
   version "4.7.5"
   resolved "http://registry.npm.taobao.org/@types/pixi.js/download/@types/pixi.js-4.7.5.tgz#098a063f6bd430af58a7a9edb45b33d0bf140909"
@@ -519,7 +523,7 @@ arrify@^1.0.0, arrify@^1.0.1:
 
 asap@~2.0.3:
   version "2.0.6"
-  resolved "http://registry.npm.taobao.org/asap/download/asap-2.0.6.tgz#e50347611d7e690943208bbdafebcbc2fb866d46"
+  resolved "https://registry.npmjs.org/asap/-/asap-2.0.6.tgz#e50347611d7e690943208bbdafebcbc2fb866d46"
 
 asn1.js@^4.0.0:
   version "4.10.1"
@@ -1527,7 +1531,7 @@ copy-descriptor@^0.1.0:
 
 core-js@^1.0.0:
   version "1.2.7"
-  resolved "http://registry.npm.taobao.org/core-js/download/core-js-1.2.7.tgz#652294c14651db28fa93bd2d5ff2983a4f08c636"
+  resolved "https://registry.npmjs.org/core-js/-/core-js-1.2.7.tgz#652294c14651db28fa93bd2d5ff2983a4f08c636"
 
 core-js@^2.0.0, core-js@^2.4.0:
   version "2.5.7"
@@ -2164,7 +2168,7 @@ encodeurl@~1.0.2:
 
 encoding@^0.1.11:
   version "0.1.12"
-  resolved "http://registry.npm.taobao.org/encoding/download/encoding-0.1.12.tgz#538b66f3ee62cd1ab51ec323829d1f9480c74beb"
+  resolved "https://registry.npmjs.org/encoding/-/encoding-0.1.12.tgz#538b66f3ee62cd1ab51ec323829d1f9480c74beb"
   dependencies:
     iconv-lite "~0.4.13"
 
@@ -2523,7 +2527,7 @@ faye-websocket@~0.11.0:
 
 fbjs@^0.8.16:
   version "0.8.16"
-  resolved "http://registry.npm.taobao.org/fbjs/download/fbjs-0.8.16.tgz#5e67432f550dc41b572bf55847b8aca64e5337db"
+  resolved "https://registry.npmjs.org/fbjs/-/fbjs-0.8.16.tgz#5e67432f550dc41b572bf55847b8aca64e5337db"
   dependencies:
     core-js "^1.0.0"
     isomorphic-fetch "^2.1.1"
@@ -3093,7 +3097,7 @@ https-proxy-agent@^2.2.1:
 
 hydux-mutator@^0.1.11:
   version "0.1.11"
-  resolved "http://registry.npm.taobao.org/hydux-mutator/download/hydux-mutator-0.1.11.tgz#4784f43f8dd994848c8b3919d13b68dca83c280d"
+  resolved "https://registry.npmjs.org/hydux-mutator/-/hydux-mutator-0.1.11.tgz#4784f43f8dd994848c8b3919d13b68dca83c280d"
   dependencies:
     "@funkia/list" "^0.1.0"
     parsimmon "^1.6.4"
@@ -3111,14 +3115,14 @@ hydux-pixi@^0.1.0:
 
 hydux-react@^0.3.1:
   version "0.3.1"
-  resolved "http://registry.npm.taobao.org/hydux-react/download/hydux-react-0.3.1.tgz#a3988357fbfcc76167595d70e1779c732d1c7016"
+  resolved "https://registry.npmjs.org/hydux-react/-/hydux-react-0.3.1.tgz#a3988357fbfcc76167595d70e1779c732d1c7016"
   dependencies:
     hydux "^0.4.6"
     lru-cache "^4.1.1"
     react "^16.2.0"
     react-dom "^16.2.0"
 
-hydux@^0.4.3, hydux@^0.4.6:
+hydux@^0.4.3:
   version "0.4.7"
   resolved "http://registry.npm.taobao.org/hydux/download/hydux-0.4.7.tgz#9674204b9849a61d017d009edcb0ae3f9ce0a235"
   dependencies:
@@ -3128,9 +3132,9 @@ hydux@^0.4.3, hydux@^0.4.6:
   optionalDependencies:
     remotedev "^0.2.7"
 
-hydux@^0.4.8:
+hydux@^0.4.6, hydux@^0.4.8:
   version "0.4.8"
-  resolved "http://registry.npm.taobao.org/hydux/download/hydux-0.4.8.tgz#8942b41e24a0d45287ac860a4f5d78af03c47053"
+  resolved "https://registry.npmjs.org/hydux/-/hydux-0.4.8.tgz#8942b41e24a0d45287ac860a4f5d78af03c47053"
   dependencies:
     lru-cache "^4.1.3"
     tslib "^1.8.1"
@@ -3585,7 +3589,7 @@ isobject@^3.0.0, isobject@^3.0.1:
 
 isomorphic-fetch@^2.1.1:
   version "2.2.1"
-  resolved "http://registry.npm.taobao.org/isomorphic-fetch/download/isomorphic-fetch-2.2.1.tgz#611ae1acf14f5e81f729507472819fe9733558a9"
+  resolved "https://registry.npmjs.org/isomorphic-fetch/-/isomorphic-fetch-2.2.1.tgz#611ae1acf14f5e81f729507472819fe9733558a9"
   dependencies:
     node-fetch "^1.0.1"
     whatwg-fetch ">=0.10.0"
@@ -4412,7 +4416,7 @@ nice-try@^1.0.4:
 
 node-fetch@^1.0.1:
   version "1.7.3"
-  resolved "http://registry.npm.taobao.org/node-fetch/download/node-fetch-1.7.3.tgz#980f6f72d85211a5347c6b2bc18c5b84c3eb47ef"
+  resolved "https://registry.npmjs.org/node-fetch/-/node-fetch-1.7.3.tgz#980f6f72d85211a5347c6b2bc18c5b84c3eb47ef"
   dependencies:
     encoding "^0.1.11"
     is-stream "^1.0.1"
@@ -4822,6 +4826,10 @@ parse-uri@^1.0.0:
 parse5@4.0.0:
   version "4.0.0"
   resolved "http://registry.npm.taobao.org/parse5/download/parse5-4.0.0.tgz#6d78656e3da8d78b4ec0b906f7c08ef1dfe3f608"
+
+parse5@^5.0.0:
+  version "5.0.0"
+  resolved "https://registry.npmjs.org/parse5/-/parse5-5.0.0.tgz#4d02710d44f3c3846197a11e205d4ef17842b81a"
 
 parseurl@~1.3.2:
   version "1.3.2"
@@ -5359,13 +5367,13 @@ promise-inflight@^1.0.1:
 
 promise@^7.1.1:
   version "7.3.1"
-  resolved "http://registry.npm.taobao.org/promise/download/promise-7.3.1.tgz#064b72602b18f90f29192b8b1bc418ffd1ebd3bf"
+  resolved "https://registry.npmjs.org/promise/-/promise-7.3.1.tgz#064b72602b18f90f29192b8b1bc418ffd1ebd3bf"
   dependencies:
     asap "~2.0.3"
 
 prop-types@^15.6.0:
   version "15.6.1"
-  resolved "http://registry.npm.taobao.org/prop-types/download/prop-types-15.6.1.tgz#36644453564255ddda391191fb3a125cbdf654ca"
+  resolved "https://registry.npmjs.org/prop-types/-/prop-types-15.6.1.tgz#36644453564255ddda391191fb3a125cbdf654ca"
   dependencies:
     fbjs "^0.8.16"
     loose-envify "^1.3.1"
@@ -5528,7 +5536,7 @@ rc@^1.0.1, rc@^1.1.2, rc@^1.1.6, rc@^1.1.7:
 
 react-dom@^16.2.0:
   version "16.4.0"
-  resolved "http://registry.npm.taobao.org/react-dom/download/react-dom-16.4.0.tgz#099f067dd5827ce36a29eaf9a6cdc7cbf6216b1e"
+  resolved "https://registry.npmjs.org/react-dom/-/react-dom-16.4.0.tgz#099f067dd5827ce36a29eaf9a6cdc7cbf6216b1e"
   dependencies:
     fbjs "^0.8.16"
     loose-envify "^1.1.0"
@@ -5544,7 +5552,7 @@ react-emotion@^9.1.3:
 
 react@^16.2.0:
   version "16.4.0"
-  resolved "http://registry.npm.taobao.org/react/download/react-16.4.0.tgz#402c2db83335336fba1962c08b98c6272617d585"
+  resolved "https://registry.npmjs.org/react/-/react-16.4.0.tgz#402c2db83335336fba1962c08b98c6272617d585"
   dependencies:
     fbjs "^0.8.16"
     loose-envify "^1.1.0"
@@ -6847,7 +6855,7 @@ typescript@^2.9.1:
 
 ua-parser-js@^0.7.9:
   version "0.7.18"
-  resolved "http://registry.npm.taobao.org/ua-parser-js/download/ua-parser-js-0.7.18.tgz#a7bfd92f56edfb117083b69e31d2aa8882d4b1ed"
+  resolved "https://registry.npmjs.org/ua-parser-js/-/ua-parser-js-0.7.18.tgz#a7bfd92f56edfb117083b69e31d2aa8882d4b1ed"
 
 uglify-es@^3.3.4:
   version "3.3.9"
@@ -7245,7 +7253,7 @@ whatwg-encoding@^1.0.1, whatwg-encoding@^1.0.3:
 
 whatwg-fetch@>=0.10.0:
   version "2.0.4"
-  resolved "http://registry.npm.taobao.org/whatwg-fetch/download/whatwg-fetch-2.0.4.tgz#dde6a5df315f9d39991aa17621853d720b85566f"
+  resolved "https://registry.npmjs.org/whatwg-fetch/-/whatwg-fetch-2.0.4.tgz#dde6a5df315f9d39991aa17621853d720b85566f"
 
 whatwg-mimetype@^2.0.0, whatwg-mimetype@^2.1.0:
   version "2.1.0"

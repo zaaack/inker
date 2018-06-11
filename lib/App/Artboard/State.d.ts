@@ -1,6 +1,7 @@
 import * as Hydux from 'hydux';
 export interface SVGFile {
     name: string;
+    title: string;
     content: string;
 }
 export interface Rect {

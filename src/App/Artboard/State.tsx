@@ -7,6 +7,7 @@ const { Cmd } = Hydux
 
 export interface SVGFile {
   name: string
+  title: string
   content: string
 }
 

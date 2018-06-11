@@ -1,6 +1,8 @@
 import * as Hydux from 'hydux'
 import * as Artboard from './Artboard'
 import * as SideBar from './SideBar'
+import * as Parse5 from 'parse5'
+import * as Utils from '../utils'
 const testSvg = require('../test/fixtures/svg-measure.svg')
 // const testSvg = require('../test/fixtures/uikit/xd/Category.svg')
 // const testSvg = require('../test/fixtures/work/1.svg')
@@ -14,6 +16,12 @@ export const init = () => {
     artboard: Artboard.init(),
     sidebar: SideBar.init()
   })
+  let dom = Parse5.parse(testSvg)
+  let title = Utils.findOne(dom, _ => _.tagName === 'title')
+  console.log('testSvg', testSvg)
+  window['testSvg'] = testSvg
+  window['Utils'] = Utils
+  window['dom'] = dom
   return {
     state: subInits.state,
     cmd: Cmd.batch<Actions>(
@@ -22,6 +30,7 @@ export const init = () => {
         _ => _.artboard.setArtboard({
           name: '',
           content: testSvg,
+          title: title ? title.innerText : ''
         })
       )
     )

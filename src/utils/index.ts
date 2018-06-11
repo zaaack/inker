@@ -1,5 +1,6 @@
 import * as LruCache from 'lru-cache'
 export * from './consts'
+export * from './dom-query'
 
 
 export function slug(key: string) {
@@ -23,3 +24,4 @@ export function svg2dataUrl(svg: string) {
   }
   return dataUrl
 }
+

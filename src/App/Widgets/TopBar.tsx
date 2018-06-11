@@ -23,10 +23,11 @@ export default function TopBar(
   props: {
     className?: string
     children?: any
+    style?: React.CSSProperties
   }
 ) {
   return (
-    <div className={cx(rootCss, props.className)}>
+    <div className={cx(rootCss, props.className)} style={props.style}>
       {props.children}
     </div>
   )
