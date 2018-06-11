@@ -71,6 +71,10 @@
   version "4.14.109"
   resolved "http://registry.npm.taobao.org/@types/lodash/download/@types/lodash-4.14.109.tgz#b1c4442239730bf35cabaf493c772b18c045886d"
 
+"@types/lru-cache@^4.1.1":
+  version "4.1.1"
+  resolved "http://registry.npm.taobao.org/@types/lru-cache/download/@types/lru-cache-4.1.1.tgz#b2d87a5e3df8d4b18ca426c5105cd701c2306d40"
+
 "@types/marked@0.3.0":
   version "0.3.0"
   resolved "http://registry.npm.taobao.org/@types/marked/download/@types/marked-0.3.0.tgz#583c223dd33385a1dda01aaf77b0cd0411c4b524"
@@ -3117,6 +3121,16 @@ hydux-react@^0.3.1:
 hydux@^0.4.3, hydux@^0.4.6:
   version "0.4.7"
   resolved "http://registry.npm.taobao.org/hydux/download/hydux-0.4.7.tgz#9674204b9849a61d017d009edcb0ae3f9ce0a235"
+  dependencies:
+    lru-cache "^4.1.3"
+    tslib "^1.8.1"
+    ultradom "2.0.0"
+  optionalDependencies:
+    remotedev "^0.2.7"
+
+hydux@^0.4.8:
+  version "0.4.8"
+  resolved "http://registry.npm.taobao.org/hydux/download/hydux-0.4.8.tgz#8942b41e24a0d45287ac860a4f5d78af03c47053"
   dependencies:
     lru-cache "^4.1.3"
     tslib "^1.8.1"

@@ -22,8 +22,8 @@ export interface RectLayer {
     rect: Rect;
     lines: Line[];
 }
-export declare const init: {
-    state: () => {
+export declare const init: () => {
+    state: {
         artboard: SVGFile | null;
         hover: RectLayer | null;
         selected: RectLayer | null;
@@ -172,4 +172,4 @@ export declare const actions: {
     }, any>;
 };
 export declare type Actions = typeof actions;
-export declare type State = ReturnType<typeof init.state>;
+export declare type State = ReturnType<typeof init>['state'];

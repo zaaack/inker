@@ -261,7 +261,7 @@ function getBorderStyles(el: SVGElement): Styles {
   ) {
     let width = el.getAttribute('stroke-width')
     let color = el.getAttribute('stroke') || 'black'
-    let widthNum = width && parseInt(width, 10)
+    let widthNum = width && Number(parseFloat(width).toFixed(1))
     if (widthNum) {
       return { 'border': `${widthNum}px solid ${color}`}
     }
@@ -377,8 +377,8 @@ function getShadowStyles(el: SVGElement, root: SVGSVGElement) {
 function getRectStyles(el: SVGElement, rect: Rect) {
   const styles = {} as Styles
   if (['tspan', 'text'].indexOf(el.tagName) < 0) {
-    styles['width'] = rect.width + 'px'
-    styles['height'] = rect.height + 'px'
+    styles['width'] = Math.round(rect.width) + 'px'
+    styles['height'] = Math.round(rect.height) + 'px'
   }
   return styles
 }

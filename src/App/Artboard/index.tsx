@@ -29,7 +29,7 @@ const rootCss = css`
   height: 100%;
   overflow: auto;
   box-sizing: border-box;
-  padding: 100px;
+  padding: ${Utils.TopBarHeight + 100}px ${Utils.SideBarWidth + 100}px;
 
   & > .wrapper {
     position: relative;
@@ -203,7 +203,7 @@ function caleDistanceLines(hover: RectLayer | null, selected: RectLayer | null, 
     if (extraLine && extraLine[size]) {
       lines.push({
         rect: extraLine,
-        length: line[size],
+        length: extraLine[size],
         direction,
       })
     }

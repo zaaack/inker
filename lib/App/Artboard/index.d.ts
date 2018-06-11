@@ -3,8 +3,8 @@ import * as Hydux from 'hydux';
 import * as State from './State';
 export declare type State = State.State;
 export declare type Actions = State.Actions;
-export declare const init: {
-    state: () => {
+export declare const init: () => {
+    state: {
         artboard: State.SVGFile | null;
         hover: State.RectLayer | null;
         selected: State.RectLayer | null;

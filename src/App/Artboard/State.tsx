@@ -37,8 +37,8 @@ export interface RectLayer {
   lines: Line[]
 }
 
-export const init = {
-  state: () => ({
+export const init = () => ({
+  state: {
     artboard: null as SVGFile | null,
     hover: null as RectLayer | null,
     selected: null as RectLayer | null,
@@ -47,8 +47,8 @@ export const init = {
     scale: 1,
     css: '',
     ratio: 1
-  }),
-}
+  }
+})
 
 function clientRectToRect(r: ClientRect | DOMRect): Rect {
   return {
@@ -111,12 +111,11 @@ function bindSvgEvents(el: SVGElement, state: State, actions: Actions, rootRect:
 
   if (
     el.tagName === 'g' &&
-    rect.width < 100 &&
-    rect.height < 200
+    [].some.call(el.children, (n: SVGElement) => n.tagName === 'path')
   ) { // Fix SVGGElement cannot click on rect
     let $rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect')
-    $rect.setAttribute('x', '0')
-    $rect.setAttribute('y', '0')
+    $rect.setAttribute('x', String(rect.left))
+    $rect.setAttribute('y', String(rect.top))
     $rect.setAttribute('width', rect.width.toFixed(2))
     $rect.setAttribute('height', rect.height.toFixed(2))
     $rect.setAttribute('fill', 'rgba(0, 0, 0, 0)')
@@ -215,4 +214,4 @@ export const actions = {
   },
 }
 export type Actions = typeof actions
-export type State = ReturnType<typeof init.state>
+export type State = ReturnType<typeof init>['state']

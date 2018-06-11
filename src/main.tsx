@@ -23,7 +23,7 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 const ctx = app({
-  init: () => [App.init.state(), App.init.cmd()],
+  init: App.init,
   actions: App.actions,
   view: App.view,
 })

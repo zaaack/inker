@@ -1,8 +1,8 @@
 /// <reference types="react" />
 import * as Hydux from 'hydux';
 import * as State from './State';
-export declare const init: {
-    state: () => {
+export declare const init: () => {
+    state: {
         artboard: {
             artboard: import("./Artboard/State").SVGFile | null;
             hover: import("./Artboard/State").RectLayer | null;
@@ -13,8 +13,12 @@ export declare const init: {
             css: string;
             ratio: number;
         };
+        sidebar: {
+            visible: boolean;
+            artboards: import("./Artboard/State").SVGFile[];
+        };
     };
-    cmd: () => Hydux.Sub<{
+    cmd: Hydux.Sub<{
         artboard: {
             setRootRect: (rect: import("./Artboard/State").Rect) => (state: {
                 artboard: import("./Artboard/State").SVGFile | null;
@@ -150,29 +154,22 @@ export declare const init: {
                 ratio: number;
             }, any>;
         };
-        update: () => (state: {
-            artboard: {
-                artboard: import("./Artboard/State").SVGFile | null;
-                hover: import("./Artboard/State").RectLayer | null;
-                selected: import("./Artboard/State").RectLayer | null;
-                containerId: string;
-                rootRect: import("./Artboard/State").Rect;
-                scale: number;
-                css: string;
-                ratio: number;
-            };
-        }, actions: any) => Hydux.ActionResult<{
-            artboard: {
-                artboard: import("./Artboard/State").SVGFile | null;
-                hover: import("./Artboard/State").RectLayer | null;
-                selected: import("./Artboard/State").RectLayer | null;
-                containerId: string;
-                rootRect: import("./Artboard/State").Rect;
-                scale: number;
-                css: string;
-                ratio: number;
-            };
-        }, any>;
+        sidebar: {
+            toggle: (visible?: boolean | undefined) => (state: {
+                visible: boolean;
+                artboards: import("./Artboard/State").SVGFile[];
+            }, actions: any) => Hydux.ActionResult<{
+                visible: boolean;
+                artboards: import("./Artboard/State").SVGFile[];
+            }, any>;
+            setArtboards: (artboards: import("./Artboard/State").SVGFile[]) => (state: {
+                visible: boolean;
+                artboards: import("./Artboard/State").SVGFile[];
+            }, actions: any) => Hydux.ActionResult<{
+                visible: boolean;
+                artboards: import("./Artboard/State").SVGFile[];
+            }, any>;
+        };
     }>[];
 };
 export declare const actions: {
@@ -311,29 +308,22 @@ export declare const actions: {
             ratio: number;
         }, any>;
     };
-    update: () => (state: {
-        artboard: {
-            artboard: import("./Artboard/State").SVGFile | null;
-            hover: import("./Artboard/State").RectLayer | null;
-            selected: import("./Artboard/State").RectLayer | null;
-            containerId: string;
-            rootRect: import("./Artboard/State").Rect;
-            scale: number;
-            css: string;
-            ratio: number;
-        };
-    }, actions: any) => Hydux.ActionResult<{
-        artboard: {
-            artboard: import("./Artboard/State").SVGFile | null;
-            hover: import("./Artboard/State").RectLayer | null;
-            selected: import("./Artboard/State").RectLayer | null;
-            containerId: string;
-            rootRect: import("./Artboard/State").Rect;
-            scale: number;
-            css: string;
-            ratio: number;
-        };
-    }, any>;
+    sidebar: {
+        toggle: (visible?: boolean | undefined) => (state: {
+            visible: boolean;
+            artboards: import("./Artboard/State").SVGFile[];
+        }, actions: any) => Hydux.ActionResult<{
+            visible: boolean;
+            artboards: import("./Artboard/State").SVGFile[];
+        }, any>;
+        setArtboards: (artboards: import("./Artboard/State").SVGFile[]) => (state: {
+            visible: boolean;
+            artboards: import("./Artboard/State").SVGFile[];
+        }, actions: any) => Hydux.ActionResult<{
+            visible: boolean;
+            artboards: import("./Artboard/State").SVGFile[];
+        }, any>;
+    };
 };
 export declare type State = State.State;
 export declare type Actions = State.Actions;
@@ -347,6 +337,10 @@ export declare const view: (state: {
         scale: number;
         css: string;
         ratio: number;
+    };
+    sidebar: {
+        visible: boolean;
+        artboards: import("./Artboard/State").SVGFile[];
     };
 }, actions: {
     artboard: {
@@ -484,27 +478,20 @@ export declare const view: (state: {
             ratio: number;
         }, any>;
     };
-    update: () => (state: {
-        artboard: {
-            artboard: import("./Artboard/State").SVGFile | null;
-            hover: import("./Artboard/State").RectLayer | null;
-            selected: import("./Artboard/State").RectLayer | null;
-            containerId: string;
-            rootRect: import("./Artboard/State").Rect;
-            scale: number;
-            css: string;
-            ratio: number;
-        };
-    }, actions: any) => Hydux.ActionResult<{
-        artboard: {
-            artboard: import("./Artboard/State").SVGFile | null;
-            hover: import("./Artboard/State").RectLayer | null;
-            selected: import("./Artboard/State").RectLayer | null;
-            containerId: string;
-            rootRect: import("./Artboard/State").Rect;
-            scale: number;
-            css: string;
-            ratio: number;
-        };
-    }, any>;
+    sidebar: {
+        toggle: (visible?: boolean | undefined) => (state: {
+            visible: boolean;
+            artboards: import("./Artboard/State").SVGFile[];
+        }, actions: any) => Hydux.ActionResult<{
+            visible: boolean;
+            artboards: import("./Artboard/State").SVGFile[];
+        }, any>;
+        setArtboards: (artboards: import("./Artboard/State").SVGFile[]) => (state: {
+            visible: boolean;
+            artboards: import("./Artboard/State").SVGFile[];
+        }, actions: any) => Hydux.ActionResult<{
+            visible: boolean;
+            artboards: import("./Artboard/State").SVGFile[];
+        }, any>;
+    };
 }) => JSX.Element;

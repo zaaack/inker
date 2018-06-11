@@ -6,6 +6,8 @@ import * as Hydux from 'hydux'
 import * as State from './State'
 import { css, cx } from 'emotion'
 import * as Artboard from './Artboard'
+import * as SideBar from './SideBar'
+import TopBar from 'App/Widgets/TopBar'
 
 const { Cmd } = Hydux
 
@@ -19,8 +21,14 @@ export type Actions = State.Actions
 
 export const view = (state: State.State, actions: State.Actions) => {
   return (
-    <div style={{ width: 517, height: 800 }}>
+    <div>
       {Artboard.view(state.artboard, actions.artboard)}
+      <TopBar>
+        <div className="btn-menu">
+        </div>
+        <div className="title"></div>
+      </TopBar>
+      {SideBar.view(state.sidebar, actions.sidebar, actions.artboard.setArtboard)}
     </div>
   )
 }
