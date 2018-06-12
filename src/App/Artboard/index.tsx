@@ -12,24 +12,9 @@ type Rect = State.Rect
 type RectLayer = State.RectLayer
 type Line = State.Line
 
-namespace Marker {
-  export const fontSize = 13
-  export const height = 24
-  export const padding = 5
-  export const margin = 10
-  export function getWidth(num: number) {
-    const charCount = Math.round(num).toString().length + 2
-    return charCount * (Marker.fontSize + 1) + Marker.padding * 2
-  }
-}
-
 const rootCss = css`
   position: relative;
-  width: 100%;
-  height: 100%;
-  overflow: auto;
-  box-sizing: border-box;
-  padding: ${Utils.TopBarHeight + 100}px ${Utils.SideBarWidth + 100}px;
+  padding: ${Utils.TopBarHeight + 100}px ${Utils.SideBarWidth + 200}px;
 
   & > .wrapper {
     position: relative;
@@ -122,7 +107,7 @@ const rootCss = css`
   .css {
     position: fixed;
     right: 50px;
-    top: 50px;
+    top: 150px;
     white-space: pre-wrap;
     background: white;
     font-size: 14px;
@@ -246,10 +231,16 @@ function Line(
     />
   )
 }
-
+let rafId = 0
 export const view = (state: State, actions: Actions) => {
   return (
-    <div className={rootCss}>
+    <div
+      className={rootCss}
+      onMouseDown={actions.dragStart}
+      onMouseMove={actions.dragMove}
+      onMouseUp={actions.dragEnd}
+      onMouseOut={actions.dragEnd}
+    >
       <div className="wrapper">
         <div className="container" id={state.containerId} />
         <div className="indicator">

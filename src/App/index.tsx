@@ -7,6 +7,7 @@ import * as State from './State'
 import { css, cx } from 'emotion'
 import * as Artboard from './Artboard'
 import * as SideBar from './SideBar'
+import * as PropsBar from './PropsBar'
 import * as Utils from 'utils'
 import * as Icons from 'Icons'
 import TopBar from 'App/Widgets/TopBar'
@@ -15,7 +16,7 @@ import { getIn, setIn, updateIn } from 'hydux-mutator'
 const { Cmd } = Hydux
 
 enum Consts {
-  iconWidth = 40,
+  iconWidth = Utils.TopBarIconSize,
   titleMarginLeft = 20,
 }
 
@@ -33,6 +34,7 @@ const rootCss = css`
     .btn-menu {
       width: ${Consts.iconWidth}px;
       height: ${Consts.iconWidth}px;
+      cursor: pointer;
     }
 
     .title {
@@ -52,6 +54,7 @@ export const view = (state: State.State, actions: State.Actions) => {
   return (
     <div className={rootCss}>
       {Artboard.view(state.artboard, actions.artboard)}
+      {PropsBar.view(state.propsbar, actions.propsbar)}
       <TopBar className="top-bar">
         <div className="top-bar-inner">
           <div className="btn-menu" onClick={_ => actions.sidebar.toggle()}>

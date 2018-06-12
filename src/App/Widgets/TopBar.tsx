@@ -8,10 +8,10 @@ const { Cmd } = Hydux
 const width = 379
 const rootCss = css`
   width: 100%;
-  height: 80px;
+  height: ${Utils.TopBarHeight}px;
   box-sizing: border-box;
-  padding: 20px;
-  line-height: 40px;
+  padding: ${(Utils.TopBarHeight - Utils.TopBarIconSize) / 2}px;
+  line-height: ${Utils.TopBarIconSize}px;
   background-color: rgb(70, 70, 70);
   box-shadow: 0px 3px 2px black;
   position: fixed;

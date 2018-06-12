@@ -17,9 +17,13 @@ if (process.env.NODE_ENV === 'development') {
   const devTools = require('hydux/lib/enhancers/devtools').default
   const logger = require('hydux/lib/enhancers/logger').default
   const hmr = require('hydux/lib/enhancers/hmr').default
-  app = logger()(app)
-  app = devTools()(app)
-  app = hmr()(app)
+  app = logger({
+    filter(action) {
+      return !/drag/.test(action)
+    }
+  })(app)
+  // app = devTools()(app)
+  // app = hmr()(app)
 }
 
 const ctx = app({

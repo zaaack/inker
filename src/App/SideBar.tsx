@@ -39,6 +39,7 @@ const rootCss = css`
   transform: translateX(-100%);
   transition: all .3s ease-in-out;
   background-color: rgb(46, 46, 46);
+  overflow-y: auto;
 
   &.visible {
     transform: translateX(0);
@@ -46,8 +47,8 @@ const rootCss = css`
   & > .top-bar {
     overflow: hidden;
     .btn-back {
-      width: 40px;
-      height: 40px;
+      width: ${Utils.TopBarIconSize}px;
+      height: ${Utils.TopBarIconSize}px;
       cursor: pointer;
       float: right;
     }

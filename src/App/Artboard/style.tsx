@@ -173,7 +173,17 @@ function transformGradients(key: string, val: string, el: SVGGradientElement) {
     return ['', '']
   }
 }
-
+function parseColor(val: string) {
+  try {
+    let c = tinycolor(val)
+    if (c.getAlpha() === 1) {
+      val = c.toHexString()
+    }
+  } catch (error) {
+    console.error(error)
+  }
+  return val
+}
 function transformAttrToStyle(
   key: string, val: string, styles: object,
   tag: string, elStyle: CSSStyleDeclaration,
@@ -185,12 +195,16 @@ function transformAttrToStyle(
     case 'fill': {
       if (tag === 'text' || tag === 'tspan') {
         key = 'color'
+        val = parseColor(val)
       } else if (
         elStyle.backgroundColor === defaultStyleProps['background-color']
       ) {
         key = 'background-color'
         let el = getElByVal(val, root)
-        if (!el) break // it's a normal background-color
+        if (!el) {
+          val = parseColor(val)
+          break // it's a normal background-color
+        }
         if (el instanceof SVGGradientElement) {
           [key, val] = transformGradients(key, val, el)
         } else {
@@ -425,9 +439,10 @@ export function getStyle(el: SVGElement, rect: Rect, root: SVGSVGElement) {
 
 export function getCss(el: SVGElement, rect: Rect, root: SVGSVGElement) {
   const styles = getStyle(el, rect, root)
-  return Object.keys(styles).reduce(
+  const css = Object.keys(styles).reduce(
     (acc, k) => {
       return acc + `${k}: ${styles[k]};\n`
     }, ''
   )
+  return css.replace(/(\D)0px/g, '$10')
 }

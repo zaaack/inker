@@ -45,9 +45,19 @@ export const init = () => ({
     selected: null as RectLayer | null,
     containerId: 'artboard_' + Math.random().toString(36).slice(2),
     rootRect: Rect.empty,
+    root: null as null | SVGSVGElement,
     scale: 1,
     css: '',
-    ratio: 1
+    ratio: 1,
+    isDragging: false,
+    initDrag: {
+      x: 0,
+      y: 0,
+    },
+    initScroll: {
+      x: 0,
+      y: 0,
+    }
   }
 })
 
@@ -148,8 +158,8 @@ function bindSvgEvents(el: SVGElement, state: State, actions: Actions, rootRect:
         rect,
         lines: calcRectBorderLines(rect, rootRect),
       })
-      const css = Style.getCss(node, rect, root)
-      actions.setCss(css)
+      // const css = Style.getCss(node, rect, root)
+      // actions.setCss(css)
     }, false)
   }
 
@@ -164,9 +174,10 @@ function bindSvgEvents(el: SVGElement, state: State, actions: Actions, rootRect:
   }
 }
 
+let rafId = 0
 export const actions = {
-  setRootRect: (rect: Rect) => (state: State, actions: Actions): Hydux.AR<State, Actions> => {
-    return { rootRect: rect }
+  setRoot: (root: SVGSVGElement, rect: Rect) => (state: State, actions: Actions): Hydux.AR<State, Actions> => {
+    return { rootRect: rect, root }
   },
   setCss: (css: string) => (state: State, actions: Actions): Hydux.AR<State, Actions> => {
     return { css }
@@ -185,7 +196,7 @@ export const actions = {
           wrapper.style.width = rect.width + 'px'
           wrapper.style.height = rect.height + 'px'
           const rootRect = clientRectToRect(wrapper.getBoundingClientRect())
-          actions.setRootRect({ ...Rect.empty, width: rootRect.width, height: rootRect.height })
+          actions.setRoot(svg, { ...Rect.empty, width: rootRect.width, height: rootRect.height })
           bindSvgEvents(svg, state, actions, rootRect, svg)
           actions.setScale(state.scale)
         }
@@ -212,6 +223,41 @@ export const actions = {
   },
   handleClick: (selected: RectLayer | null) => (state: State, actions: Actions): Hydux.AR<State, Actions> => {
     return { ...state, hover: null, selected }
+  },
+  dragStart: (e: React.MouseEvent<any>) => (state: State, actions: Actions): Hydux.AR<State, Actions> => {
+    e.stopPropagation()
+    if (state.isDragging) {
+      return
+    }
+    state.isDragging = true
+    state.initDrag.x = e.screenX
+    state.initDrag.y = e.screenY
+    state.initScroll.x = document.documentElement.scrollTop
+    state.initScroll.y = document.documentElement.scrollLeft
+    console.log('dragStart', state)
+  },
+  dragMove: (e: React.MouseEvent<any>) => (state: State, actions: Actions): Hydux.AR<State, Actions> => {
+    e.stopPropagation()
+    if (!state.isDragging) {
+      return
+    }
+    let deltaX = e.screenX - state.initDrag.x
+    let deltaY = e.screenY - state.initDrag.y
+    let scrollLeft = state.initScroll.x - deltaX
+    let scrollTop = state.initScroll.y - deltaY
+    console.log('dragMove', deltaX, deltaY, scrollLeft, scrollTop)
+    rafId && cancelAnimationFrame(rafId)
+    rafId = requestAnimationFrame(
+      () => {
+        // el.style.transform = `translate(${deltaX}px, ${deltaY}px)`
+        window.scrollTo(scrollLeft, scrollTop)
+      }
+    )
+  },
+  dragEnd: (e: React.MouseEvent<any>) => (state: State, actions: Actions): Hydux.AR<State, Actions> => {
+    e.stopPropagation()
+    console.log('dragEnd')
+    state.isDragging = false
   },
 }
 export type Actions = typeof actions
