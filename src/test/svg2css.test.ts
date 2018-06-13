@@ -44,17 +44,20 @@ describe('uikit', () => {
     $svg = files.xd.category()
 
     testCss($svg, '#test1', `
+      background-image: linear-gradient(0deg, #000000 0%, rgba(0, 0, 0, 0) 100%);
+      opacity: 0.3;
+      border-radius: 8px;
       width: 343px;
       height: 120px;
-      border-radius: 8px;
-      background-image: linear-gradient(0deg, #000000 0%, rgba(0, 0, 0, 0) 100%);
-      opacity: 0.3;`)
+    `)
 
     testCss($svg, '#test2', `
+      background-image: linear-gradient(3.14deg, #000000 0%, rgba(0, 0, 0, 0) 100%);
+      opacity: 0.3;
+      border-radius: 8px;
       width: 343px;
       height: 74px;
-      background-image: linear-gradient(3.14deg, #000000 0%, rgba(0, 0, 0, 0) 100%);
-      opacity: 0.3;`)
+    `)
 
     testCss($svg, '#test3', `
       font-size: 28px;
@@ -68,24 +71,27 @@ describe('shadow', () => {
   it('xd', () => {
     $svg = files.shadow.xd()
     testCss($svg, '#test1', `
-    width: 83px;
-    height: 49px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5), inset 0 1px 2px rgba(0, 0, 0, 0.5);`)
+      background-color: #ffffff;
+      box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
+      width: 82px;
+      height: 72px;
+    `)
   })
   it('sketch', () => {
     $svg = files.shadow.sketch()
     testCss($svg, '#test1', `
-    width: 343px;
-    height: 160px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5), inset 0 1px 2px rgba(0, 0, 0, 0.5);`)
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5), inset 0 1px 2px rgba(0, 0, 0, 0.5);
+      width: 343px;
+      height: 160px;
+    `)
   })
   it('gravit', () => {
     $svg = files.shadow.gravit()
     testCss($svg, '#test1', `
-    width: 103px;
-    height: 68px;
-    box-shadow: 1px 2px 4px rgba(0, 0, 0, 0.5);
-    background-color: #ebebeb;
+      background-color: #ebebeb;
+      box-shadow: 1px 2px 4px rgba(0, 0, 0, 0.5);
+      width: 103px;
+      height: 68px;
     `)
   })
 })
