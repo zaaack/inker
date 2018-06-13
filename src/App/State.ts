@@ -4,9 +4,8 @@ import * as SideBar from './SideBar'
 import * as PropsBar from './PropsBar'
 import * as Parse5 from 'parse5'
 import * as Utils from '../utils'
-import * as Styles from 'App/Artboard/Style'
+import * as Styles from 'App/Artboard/style'
 import * as Dropzone from 'react-dropzone'
-const testSvg = require('../test/fixtures/svg-measure.svg')
 // const testSvg = require('../test/fixtures/uikit/xd/Category.svg')
 // const testSvg = require('../test/fixtures/work/1.svg')
 // const testSvg = require('../test/fixtures/shadow.svg')
@@ -20,9 +19,6 @@ export const init = () => {
     sidebar: SideBar.init(),
     propsbar: PropsBar.init(),
   })
-  let dom = Parse5.parse(testSvg)
-  let title = Utils.findOne(dom, _ => _.tagName === 'title')
-  let name = 'svg-measure'
   return {
     state: {
       ...subInits.state,
@@ -32,6 +28,11 @@ export const init = () => {
       subInits.cmd,
       Cmd.ofSub(
         _ => {
+          const testSvg = require('../test/fixtures/uikit/xd/Category.svg')
+          // const testSvg = require('../test/fixtures/svg-measure.svg')
+          let dom = Parse5.parse(testSvg)
+          let title = Utils.findOne(dom, _ => _.tagName === 'title')
+          let name = 'svg-measure'
           _.artboard.setArtboard({
             name,
             content: testSvg,
@@ -96,8 +97,11 @@ export const actions = {
               return true
             }
           )
-          _.sidebar.setArtboards(svgFiles)
+          _.sidebar.setArtboards(state.sidebar.artboards.concat(svgFiles))
           _.sidebar.toggle(true)
+          if (!state.artboard.artboard) {
+            _.artboard.setArtboard(svgFiles[0])
+          }
         }
       )
     ]

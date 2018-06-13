@@ -377,7 +377,6 @@ class StyleParser {
           // ignore
         }
         if (!mask) return
-        debugger
         const children = getChildren(mask as SVGElement, root)
         if (children.length === 1) {
           if (children[0].tagName === 'rect') {

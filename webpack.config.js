@@ -15,7 +15,7 @@ module.exports = {
   output: {
     filename: "[name].js",
     path: DIST,
-    publicPath: '/static/dist/',
+    publicPath: '/svg-measure/static/dist/',
   },
 
   // Enable sourcemaps for debugging webpack's output.

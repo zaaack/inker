@@ -175,6 +175,9 @@ export function view(
           )
         )}
       </div>
+      <div className="powered">
+        Powered by <a href="https://github.com/hydux/hydux">hydux</a>
+      </div>
     </div>
   )
 }

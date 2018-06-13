@@ -5,6 +5,8 @@ import { cx, css } from 'emotion'
 import TopBar from 'App/Widgets/TopBar'
 import * as Icons from 'Icons'
 import * as Utils from 'utils'
+import * as Widgets from 'App/Widgets'
+import Dropzone, { DropFilesEventHandler } from 'react-dropzone'
 
 const { Cmd } = Hydux
 
@@ -28,32 +30,27 @@ export const actions = {
 }
 
 const rootCss = css`
-  height: 100%;
+  height: ${window.innerHeight}px;
   position: fixed;
   left: 0;
   top: 0;
   width: ${Utils.SideBarWidth + 5}px;
   padding-right: 5px;
+  padding-top: ${Utils.TopBarHeight}px;
   box-sizing: border-box;
   transform: translateX(-100%);
   transition: all .3s ease-in-out;
-  overflow-y: auto;
 
-  &::before {
+  /* &::before {
     content: '';
     background-color: rgb(46, 46, 46);
-    position: absolute;
+    position: fixed;
     left: 0;
     top: 0;
     width: ${Utils.SideBarWidth}px;
     height: 100%;
     z-index: -1;
-  }
-
-  &::-webkit-scrollbar {
-    display: none;
-  }
-
+  } */
   &.visible {
     transform: translateX(0);
   }
@@ -61,6 +58,9 @@ const rootCss = css`
     overflow: hidden;
     box-shadow: 0 3px 2px rgba(0, 0, 0, .48);
     width: ${Utils.SideBarWidth}px;
+    position: fixed;
+    left: 0;
+    top: 0;
 
     .btn-back {
       width: ${Utils.TopBarIconSize}px;
@@ -70,12 +70,25 @@ const rootCss = css`
     }
   }
   & > .content {
-    padding: ${Utils.TopBarHeight + 30}px 20px 30px;
+    padding: 30px 20px 30px;
     box-sizing: border-box;
+    overflow-y: auto;
+    position: fixed;
+    left: 0;
+    top: ${Utils.TopBarHeight}px;
+    width: ${Utils.SideBarWidth}px;
+    height: ${window.innerHeight - Utils.TopBarHeight}px;
+    background-color: rgb(46, 46, 46);
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+
     .item {
       margin: 0 auto 30px;
       cursor: pointer;
       opacity: .7;
+      position: relative;
 
       &.selected {
         opacity: 1;
@@ -94,6 +107,16 @@ const rootCss = css`
         color: rgb(255, 255, 255);
         text-align: center;
       }
+
+      &.dropzone {
+        height: 200px;
+        .hint {
+          padding: 20px;
+          position: relative;
+          opacity: 1;
+          background: transparent;
+        }
+      }
     }
   }
 `
@@ -102,7 +125,8 @@ export function view(
   state: State,
   actions: Actions,
   current: SVGFile | null,
-  onItemClick: (artboard: SVGFile, i: number) => void
+  onItemClick: (artboard: SVGFile, i: number) => void,
+  onDrop: DropFilesEventHandler
 ) {
   return (
     <div className={cx(rootCss, state.visible && 'visible')}>
@@ -115,6 +139,7 @@ export function view(
         {state.artboards.map(
           (item, i) => (
             <div
+              key={i}
               className={cx('item', current && item.content === current.content && 'selected')}
               onClick={
                 e => {
@@ -128,6 +153,16 @@ export function view(
             </div>
           )
         )}
+        <div className="item dropzone">
+          <Dropzone
+            accept="image/svg+xml"
+            style={{ height: '100%' }}
+            disablePreview
+            onDrop={onDrop}
+          >
+            <Widgets.DropHint className="hint" />
+          </Dropzone>
+        </div>
       </div>
     </div>
   )

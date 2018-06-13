@@ -1,6 +1,3 @@
-// DesignViewer
-
-//  svg -> ast -> layers  stwithyles -> save icons (batched)
 import * as React from 'react'
 import * as Hydux from 'hydux'
 import * as State from './State'
@@ -13,6 +10,7 @@ import * as Icons from 'Icons'
 import TopBar from 'App/Widgets/TopBar'
 import DropZone from 'react-dropzone'
 import { getIn, setIn, updateIn } from 'hydux-mutator'
+import * as Widgets from 'App/Widgets'
 
 const { Cmd } = Hydux
 
@@ -37,37 +35,6 @@ const rootCss = css`
       margin-left: ${Consts.titleMarginLeft}px;
       color: rgb(232, 232, 232);
       transition: all .3s ease-in-out;
-    }
-  }
-
-  .hint {
-    position: fixed;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    box-sizing: border-box;
-    padding: 60px 40px;
-    background: rgba(0, 0, 0, .4);
-    &::before {
-      content: '';
-      display: block;
-      border: 3px dashed #e8e8e8;
-      border-radius: 30px;
-      width: 100%;
-      height: 100%;
-      box-sizing: border-box;
-      position: relative;
-    }
-
-    span {
-      color: #e8e8e8;
-      text-align: center;
-      display: block;
-      position: absolute;
-      width: 100%;
-      top: 50%;
-      transform: translateY(-50%);
     }
   }
 `
@@ -109,11 +76,10 @@ export const view = (state: State.State, actions: State.Actions) => {
         actions.sidebar,
         state.artboard.artboard,
         actions.artboard.setArtboard,
-        )}
+        actions.onDrop,
+      )}
       {state.dropzoneActive && (
-        <div className="hint">
-          <span>Drop your SVG files here...</span>
-        </div>
+        <Widgets.DropHint />
       )}
     </DropZone>
   )

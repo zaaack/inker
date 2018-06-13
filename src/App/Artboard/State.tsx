@@ -129,7 +129,8 @@ function bindSvgEvents(el: SVGElement, state: State, actions: Actions, rootRect:
 
   if (
     el.tagName === 'g' &&
-    [].some.call(el.children, (n: SVGElement) => n.tagName === 'path')
+    [].some.call(el.children, (n: SVGElement) => n.tagName === 'path') &&
+    rect.width < 100 && rect.height < 100
   ) { // Fix SVGGElement cannot click on rect
     let $rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect')
     $rect.setAttribute('x', String(rect.left))
@@ -202,6 +203,8 @@ export const actions = {
           const rect = clientRectToRect(svg.getBoundingClientRect())
           svg.style.width = rect.width + 'px'
           svg.style.height = rect.height + 'px'
+          wrapper.draggable = false
+          svg['draggable'] = false
           actions.setRoot(svg, { ...Rect.empty, width: rect.width, height: rect.height })
           bindSvgEvents(svg, state, actions, rect, svg)
           actions.setScale(state.scale)
