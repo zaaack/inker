@@ -27,25 +27,41 @@ export const actions = {
   })
 }
 
-const width = 379
 const rootCss = css`
-  width: ${width}px;
   height: 100%;
   position: fixed;
   left: 0;
   top: 0;
-  width: ${Utils.SideBarWidth}px;
+  width: ${Utils.SideBarWidth + 5}px;
+  padding-right: 5px;
   box-sizing: border-box;
   transform: translateX(-100%);
   transition: all .3s ease-in-out;
-  background-color: rgb(46, 46, 46);
   overflow-y: auto;
+
+  &::before {
+    content: '';
+    background-color: rgb(46, 46, 46);
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: ${Utils.SideBarWidth}px;
+    height: 100%;
+    z-index: -1;
+  }
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
 
   &.visible {
     transform: translateX(0);
   }
   & > .top-bar {
     overflow: hidden;
+    box-shadow: 0 3px 2px rgba(0, 0, 0, .48);
+    width: ${Utils.SideBarWidth}px;
+
     .btn-back {
       width: ${Utils.TopBarIconSize}px;
       height: ${Utils.TopBarIconSize}px;
@@ -54,17 +70,26 @@ const rootCss = css`
     }
   }
   & > .content {
-    padding: ${Utils.TopBarHeight + 30}px 72px 30px;
+    padding: ${Utils.TopBarHeight + 30}px 20px 30px;
+    box-sizing: border-box;
     .item {
       margin: 0 auto 30px;
+      cursor: pointer;
+      opacity: .7;
+
+      &.selected {
+        opacity: 1;
+      }
       .cover {
-        width: 236px;
-        height: 280px;
+        max-width: 100%;
+        max-height: 280px;
         background: no-repeat center top;
         background-size: cover;
+        display: block;
+        margin: 0 auto;
       }
       .title {
-        margin-top: 12px;
+        margin-top: 10px;
         font-size: 18px;
         color: rgb(255, 255, 255);
         text-align: center;
@@ -76,6 +101,7 @@ const rootCss = css`
 export function view(
   state: State,
   actions: Actions,
+  current: SVGFile | null,
   onItemClick: (artboard: SVGFile, i: number) => void
 ) {
   return (
@@ -89,7 +115,7 @@ export function view(
         {state.artboards.map(
           (item, i) => (
             <div
-              className="item"
+              className={cx('item', current && item.content === current.content && 'selected')}
               onClick={
                 e => {
                   onItemClick(item, i)
@@ -97,8 +123,8 @@ export function view(
                 }
               }
             >
-              <div className="cover" style={{ backgroundImage: `url(${Utils.svg2dataUrl(item.content)})` }} />
-              <div className="title">{item.name}</div>
+              <img src={Utils.svg2dataUrl(item.content)} alt="" className="cover"/>
+              <div className="title">{item.title || item.name}</div>
             </div>
           )
         )}

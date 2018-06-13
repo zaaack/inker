@@ -58,3 +58,4 @@ typings/
 .env
 
 src/test/fixtures/work
+lib

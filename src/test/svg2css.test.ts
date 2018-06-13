@@ -16,9 +16,15 @@ const getSVGDom = (file: string) => {
   return $svg
 }
 
-namespace uikit {
+namespace files {
   export const xd = {
     category: () => getSVGDom(`./fixtures/uikit/xd/Category.svg`),
+  }
+
+  export const shadow = {
+    xd: () => getSVGDom(`./fixtures/xd/shadow.svg`),
+    sketch: () => getSVGDom(`./fixtures/sketch/shadow.svg`),
+    gravit: () => getSVGDom(`./fixtures/gravit/shadow.svg`),
   }
 }
 
@@ -35,11 +41,12 @@ describe('uikit', () => {
   let $svg: SVGSVGElement
   let el: SVGElement
   it('xd', () => {
-    $svg = uikit.xd.category()
+    $svg = files.xd.category()
 
     testCss($svg, '#test1', `
       width: 343px;
       height: 120px;
+      border-radius: 8px;
       background-image: linear-gradient(0deg, #000000 0%, rgba(0, 0, 0, 0) 100%);
       opacity: 0.3;`)
 
@@ -52,6 +59,33 @@ describe('uikit', () => {
     testCss($svg, '#test3', `
       font-size: 28px;
       letter-spacing: 0.36px;
-      color: rgb(255, 255, 255);`)
+      color: #ffffff;`)
+  })
+})
+
+describe('shadow', () => {
+  let $svg: SVGSVGElement
+  it('xd', () => {
+    $svg = files.shadow.xd()
+    testCss($svg, '#test1', `
+    width: 83px;
+    height: 49px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5), inset 0 1px 2px rgba(0, 0, 0, 0.5);`)
+  })
+  it('sketch', () => {
+    $svg = files.shadow.sketch()
+    testCss($svg, '#test1', `
+    width: 343px;
+    height: 160px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5), inset 0 1px 2px rgba(0, 0, 0, 0.5);`)
+  })
+  it('gravit', () => {
+    $svg = files.shadow.gravit()
+    testCss($svg, '#test1', `
+    width: 103px;
+    height: 68px;
+    box-shadow: 1px 2px 4px rgba(0, 0, 0, 0.5);
+    background-color: #ebebeb;
+    `)
   })
 })

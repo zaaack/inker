@@ -4,11 +4,76 @@ import * as MathJS from 'mathjs'
 import { Rect } from './State'
 
 export enum Keys {
-  shadowNodes = 'shadowNodes'
+  shadowNodes = 'shadowNodes',
 }
 function bodyStyle(name: string) {
   return getComputedStyle(document.body).getPropertyValue(name)
 }
+
+function formatColor(color: tinycolorInstance | string) {
+  if (typeof color === 'string') {
+    color = tinycolor(color)
+  }
+  return color.getAlpha() === 1 ? color.toHexString() : color.toRgbString()
+}
+type CSSStyles = { [k: string]: { [k: string]: string } }
+const SVGStyleKey = '@svg-measure/svg-styles'
+const SVGUseStyleKey = '@svg-measure/svg-use-styles'
+function getSVGStyle(el: SVGElement, root: SVGSVGElement): Styles {
+  const RulesKey = '@svg-measure/rules'
+  function parseStyle(rulesStr: string) {
+    let rule = {} as { [k: string]: string }
+    rulesStr
+      .split(';')
+      .map(s => s.trim())
+      .forEach(_ => {
+        let [k, v] = _.split(':').map(s => s.trim())
+        if (k in defaultStyleProps) {
+          rule[k] = v
+        }
+      })
+    return rule
+  }
+  function parseStyles(css: string) {
+    let styles = {} as CSSStyles
+    let splits = css.split('}')
+    for (let i = 0; i < splits.length; i++) {
+      let [header, rulesStr] = splits[i].split('{')
+      if (!rulesStr) continue
+      let cls = (header.trim().match(/\.([\w-]+)/) || [])[1]
+      let rule = styles[cls] || (styles[cls] = {})
+      Object.assign(rule, parseStyle(rulesStr))
+    }
+    return styles
+  }
+  let style = el[SVGStyleKey]
+  if (!style) {
+    let cssRules = root[RulesKey]
+    if (!cssRules) {
+      let css = ([].slice.call(root.querySelectorAll('style')) as HTMLStyleElement[])
+        .map(s => s.innerText)
+        .join('')
+      cssRules = root[RulesKey] = parseStyles(css)
+    }
+    let clses = (el.className && el.className.baseVal || '').split(/\s+/) as string[]
+    let elStyle = parseStyles(el.getAttribute('style') || '')
+    let attrStyle = getAttrs(el).reduce((acc, attr) => {
+      acc[attr.name] = attr.value
+      return acc
+    }, {})
+    let parenStyle = el.parentElement && el.parentElement.tagName === 'g' ? getSVGStyle(el.parentElement as any, root) : {}
+    style = el[SVGStyleKey] = Object.assign.call(
+      Object,
+      attrStyle,
+      ...clses.map(c => cssRules[c] || {}),
+      elStyle,
+      parenStyle,
+    )
+  }
+  console.log('svgstyle', style, el.tagName, el.className && el.className.baseVal)
+  return style
+}
+
 export type Styles = { [k: string]: string }
 const defaultStyleProps = {
   'font-family': bodyStyle('font-family'),
@@ -63,17 +128,10 @@ const skipValues = new Set([
 const skipTransformValues = /(?:matrix|translate(:?[XYZ]|3d)?)\([^)]+\)/g
 
 function filterStyle(key: string, val: string) {
-  if (
-    /^\d+$/.test(key) ||
-    val === defaultStyleProps[key] ||
-    skipValues.has(val)
-  ) {
+  if (/^\d+$/.test(key) || val === defaultStyleProps[key] || skipValues.has(val)) {
     return false
   }
-  if (
-    key === 'transform' &&
-    /^\s*$/.test(val.replace(skipTransformValues, ''))
-  ) {
+  if (key === 'transform' && /^\s*$/.test(val.replace(skipTransformValues, ''))) {
     return false
   }
   return true
@@ -84,14 +142,18 @@ function getUrlVal(val: string): string | null {
   return m ? m[1] : null
 }
 
-function getAttrs(el: SVGElement) {
-  return [].filter.call(
-    el.attributes,
-    (attr: Attr) => ['id', 'class'].indexOf(attr.name) < 0
-  )
+function getAttrs(el: SVGElement): Attr[] {
+  return [].filter.call(el.attributes, (attr: Attr) => ['id', 'class'].indexOf(attr.name) < 0)
 }
 
-function getEl(el: SVGElement | null, root: SVGElement): SVGElement | null {
+function getAttr(el: SVGElement, name: string, root: SVGSVGElement) {
+  let val: string | null = el[SVGUseStyleKey] && el[SVGUseStyleKey][name]
+  if (val) return val
+  val = getSVGStyle(el, root)[name]
+  if (val) return val
+  return el.getAttribute(name)
+}
+function getEl(el: SVGElement | null, root: SVGSVGElement): SVGElement | null {
   if (!el) return null
   if (el.tagName === 'use') {
     const hrefKey = 'xlink:href'
@@ -101,22 +163,20 @@ function getEl(el: SVGElement | null, root: SVGElement): SVGElement | null {
       realEl = realEl && getEl(realEl, root)
       if (realEl) {
         realEl = realEl.cloneNode() as SVGElement
-        getAttrs(el).forEach(
-          (attr: Attr) => {
-            if (
-              attr.name !== hrefKey
-            ) {
-              realEl!.setAttribute(attr.name, attr.value)
-            }
+        let elStyle = getSVGStyle(el, root)
+        let realElStyle = { ...realEl[SVGUseStyleKey], ...getSVGStyle(realEl, root) }
+        for (const key in elStyle) {
+          if (name !== hrefKey) {
+            realElStyle[name] = elStyle[key]
           }
-        )
+        }
+        realEl[SVGUseStyleKey] = realElStyle
       }
       return realEl
     }
     return null
-  } else {
-    return el
   }
+  return el
 }
 
 function getElByVal(val: string | null, root: SVGSVGElement) {
@@ -132,7 +192,7 @@ function getElByVal(val: string | null, root: SVGSVGElement) {
   }
 }
 
-function getChildren(el: SVGElement, root: SVGElement) {
+function getChildren(el: SVGElement, root: SVGSVGElement) {
   let children = [] as SVGElement[]
   for (let i = 0; i < el.children.length; i++) {
     let child = getEl(el.children[i] as SVGElement, root)
@@ -143,36 +203,6 @@ function getChildren(el: SVGElement, root: SVGElement) {
   return children
 }
 
-function transformGradients(key: string, val: string, el: SVGGradientElement) {
-  key = 'background-image'
-  if (el instanceof SVGLinearGradientElement) {
-    const getVal = (e: SVGAnimatedLength) => e.baseVal.value
-    const deltaX = getVal(el.x2) - getVal(el.x1)
-    const deltaY = getVal(el.y2) - getVal(el.y1)
-    const cos = deltaY / Math.sqrt(Math.pow(deltaX, 2) + Math.pow(deltaY,2))
-    const degree = Math.acos(cos)
-    let steps: (string | void)[] = [].map.call(
-      el.children,
-      (el: SVGStopElement) => {
-        const offset = el.getAttribute('offset')
-        let color = el.getAttribute('stop-color')
-        if (!color || !offset) return
-        let rgba = tinycolor(color)
-        const opacity = el.getAttribute('stop-opacity')
-        if (opacity && opacity !== '1') {
-          rgba.setAlpha(Number(opacity))
-        }
-        return `${rgba.getAlpha() === 1 ? rgba.toHexString() : rgba.toRgbString()} ${offset}`
-      }
-    )
-    key = 'background-image'
-    val = `linear-gradient(${Number(degree.toFixed(2))}deg, ${steps.filter(Boolean).join(', ')})`
-    return [key, val] as [string, string]
-  } else {
-    console.error(new Error('unimplemented'))
-    return ['', '']
-  }
-}
 function parseColor(val: string) {
   try {
     let c = tinycolor(val)
@@ -184,136 +214,11 @@ function parseColor(val: string) {
   }
   return val
 }
-function transformAttrToStyle(
-  key: string, val: string, styles: object,
-  tag: string, elStyle: CSSStyleDeclaration,
-  rect: Rect,
-  root: SVGSVGElement,
-): [string | void, string | void] | void {
-  const originalKey = key
-  switch (key) {
-    case 'fill': {
-      if (tag === 'text' || tag === 'tspan') {
-        key = 'color'
-        val = parseColor(val)
-      } else if (
-        elStyle.backgroundColor === defaultStyleProps['background-color']
-      ) {
-        key = 'background-color'
-        let el = getElByVal(val, root)
-        if (!el) {
-          val = parseColor(val)
-          break // it's a normal background-color
-        }
-        if (el instanceof SVGGradientElement) {
-          [key, val] = transformGradients(key, val, el)
-        } else {
-          key = ''
-          console.error(new Error('unimplemented'), key, val)
-        }
-      }
-      break
-    }
-    case 'fill-opacity':
-      key = 'opacity'
-      break
-    case 'rx':
-    case 'ry':
-      key = 'border-radius'
-      if (styles[key] && styles[key] !== val) {
-        val = originalKey === 'rx'
-          ? `${val}/${styles[key]}`
-          : `${styles[key]}/${val}`
-      }
-      break
-    case 'r':
-      if (tag === 'circle') {
-        key = 'border-radius'
-        val = '50%'
-      } else {
-        key = ''
-      }
-      break
-    case 'mask': {
-      let sel = getUrlVal(val)
-      if (!sel) return
-      let mask
-      try {
-        mask = root.querySelector(sel)
-      } catch {
-        // ignore
-      }
-      if (!mask) return
-      const children = getChildren(mask as SVGElement, root)
-      if (
-        children.length === 1
-      ) {
-        if (children[0].tagName === 'rect') {
-          const s = getStyle(children[0], rect, root)
-          if (s['border-radius']) {
-            styles['border-radius'] = s['border-radius']
-          }
-        } else if (children[0].tagName === 'circle') {
-          const width = children[0].getAttribute('width')
-          if (width) {
-            const radius = parseInt(width, 10) / 2
-            styles['border-radius'] = radius
-          }
-        }
-      }
-      return
-    }
-    default:
-      break
-  }
-  return [key, val]
-}
 
-function getBorderStyles(el: SVGElement): Styles {
-  if (
-    el.tagName === 'rect'
-  ) {
-    let width = el.getAttribute('stroke-width')
-    let color = el.getAttribute('stroke') || 'black'
-    let widthNum = width && Number(parseFloat(width).toFixed(1))
-    if (widthNum) {
-      return { 'border': `${widthNum}px solid ${color}`}
-    }
-  }
-  return {}
-}
-
-function getShadowFromFilter(filterVal: string, fill: string | null, root: SVGSVGElement) {
-  // let realEl = getEl(el, root)
-  // if (!realEl) return ''
-  // let filter = getElByVal(el.getAttribute('filter'), root) as SVGFilterElement | null
-  let filter = getElByVal(filterVal, root) as SVGFilterElement | null
-  if (!filter) return
-  let colorMatrix = filter.querySelector('feColorMatrix') as SVGFEColorMatrixElement | null
-  fill = filter.getAttribute('fill') || fill
-  let color = fill ? getColorWithMatrix(colorMatrix, fill) : 'black'
-  let $offset = filter.querySelector('feOffset') as SVGFEOffsetElement | null
-  let $blur = filter.querySelector('feGaussianBlur') as SVGFEGaussianBlurElement | null
-  let $composite = filter.querySelector('feComposite') as SVGFECompositeElement | null
-  let $componentTransfer = filter.querySelector('feComponentTransfer') as SVGFEComponentTransferElement | null
-  if ($offset && $blur) {
-    let isOut = false
-    if ($composite) {
-      isOut = $composite.getAttribute('operator') === 'out'
-    } else if ($componentTransfer) {
-      isOut = ($componentTransfer.getAttribute('in') || '').toLowerCase().includes('out')
-    }
-    let dx = $offset.getAttribute('dx')
-    let dy = $offset.getAttribute('dy')
-    let blur = $blur.getAttribute('stdDeviation')
-    return (isOut ? '' : 'inset ') + `${dx}px ${dy}px ${parseInt((blur || '0'), 10) * 2}px ${color}`
-  }
-  return
-}
-
+/** Sketch color */
 function getColorWithMatrix(el: SVGFEColorMatrixElement | null, fill: string) {
   if (!el) {
-    return tinycolor(fill).toRgbString()
+    return formatColor(tinycolor(fill))
   }
   let matrix = [] as number[][]
   let rgba = tinycolor(fill).toRgb()
@@ -326,123 +231,301 @@ function getColorWithMatrix(el: SVGFEColorMatrixElement | null, fill: string) {
       matrix[matrix.length - 1][i % 5] = item.value
     }
     let m = MathJS.matrix(matrix)
-    m = MathJS.multiply(m, [rgba.r, rgba.g, rgba.b, rgba.r])
-    let ma = m.toJSON()
+    m = MathJS.multiply(m, [[rgba.r], [rgba.g], [rgba.b], [rgba.a], [1]])
+    let ma = m.toJSON().data
     let color = tinycolor({
       r: ma[0],
       g: ma[1],
       b: ma[2],
       a: ma[3],
     })
-    return color.toRgbString()
+    return formatColor(color)
   }
-  return null
+  return fill
 }
 
-// Handle sketch shadow with inner shadow
-function getShadowNodes(node: SVGElement) {
-  if (
-    node.tagName === 'rect' &&
-    node.parentElement &&
-    node.parentElement.tagName === 'g'
-  ) {
+class StyleParser {
+  constructor(
+    public el: SVGElement,
+    public rect: Rect,
+    public root: SVGSVGElement,
+    public SVGStyle = getSVGStyle(el, root),
+  ) {}
 
-    const { children } = node.parentElement
-    let siblings = [].slice.call(children) as SVGElement[]
+  getAttr(name: string) {
+    const { el, root } = this
+    return getAttr(el, name, root)
+  }
+  transformGradients(el: SVGGradientElement, key: string, val: string) {
+    key = 'background-image'
+    if (el instanceof SVGLinearGradientElement) {
+      const getVal = (e: SVGAnimatedLength) => e.baseVal.value
+      const deltaX = getVal(el.x2) - getVal(el.x1)
+      const deltaY = getVal(el.y2) - getVal(el.y1)
+      const cos = deltaY / Math.sqrt(Math.pow(deltaX, 2) + Math.pow(deltaY, 2))
+      const degree = Math.acos(cos)
+      let steps: (string | void)[] = [].map.call(el.children, (el: SVGStopElement) => {
+        const offset = getAttr(el, 'offset', this.root)
+        let color = getAttr(el, 'stop-color', this.root)
+        if (!color || !offset) return
+        let rgba = tinycolor(color)
+        const opacity = getAttr(el, 'stop-opacity', this.root)
+        if (opacity && opacity !== '1') {
+          rgba.setAlpha(Number(opacity))
+        }
+        return `${formatColor(rgba)} ${offset}`
+      })
+      key = 'background-image'
+      val = `linear-gradient(${Number(degree.toFixed(2))}deg, ${steps.filter(Boolean).join(', ')})`
+      return [key, val] as [string, string]
+    } else {
+      console.error(new Error('unimplemented'))
+      return ['', '']
+    }
+  }
+  transformAttrToStyle(
+    key: string,
+    val: string,
+    styles: object,
+    tag: string,
+    elStyle: Styles,
+  ): [string | void, string | void] | void {
+    const { root, rect } = this
+    const originalKey = key
+    switch (key) {
+      case 'fill': {
+        if (tag === 'text' || tag === 'tspan') {
+          key = 'color'
+          val = parseColor(val)
+        } else if (!elStyle.backgroundColor || elStyle.backgroundColor === defaultStyleProps['background-color']) {
+          key = 'background-color'
+          let el = getElByVal(val, root)
+          console.log('el', el && el.tagName, val)
+          if (!el) {
+            val = parseColor(val)
+            break // it's a normal background-color
+          }
+          if (el instanceof SVGGradientElement) {
+            [key, val] = this.transformGradients(el, key, val)
+          } else {
+            key = ''
+            console.log(new Error('unimplemented'), key, val)
+          }
+        } else {
+          console.log(new Error('unimplemeneted'), key, val)
+        }
+        break
+      }
+      case 'fill-opacity':
+        key = 'opacity'
+        break
+      case 'rx':
+      case 'ry':
+        key = 'border-radius'
+        val = /^\d+$/.test(val) ? val + 'px' : val
+        if (styles[key] && styles[key] !== val) {
+          val = originalKey === 'rx' ? `${val}/${styles[key]}` : `${styles[key]}/${val}`
+        }
+        break
+      case 'r':
+        if (tag === 'circle') {
+          key = 'border-radius'
+          val = '50%'
+        } else {
+          key = ''
+        }
+        break
+      case 'mask': {
+        let sel = getUrlVal(val)
+        if (!sel) return
+        let mask
+        try {
+          mask = root.querySelector(sel)
+        } catch {
+          // ignore
+        }
+        if (!mask) return
+        const children = getChildren(mask as SVGElement, root)
+        if (children.length === 1) {
+          if (children[0].tagName === 'rect') {
+            const s = new StyleParser(children[0], rect, root).getStyle()
+            if (s['border-radius']) {
+              styles['border-radius'] = s['border-radius']
+            }
+          } else if (children[0].tagName === 'circle') {
+            const width = getAttr(children[0], 'width', root)
+            if (width) {
+              const radius = parseInt(width, 10) / 2
+              styles['border-radius'] = radius
+            }
+          }
+        }
+        return
+      }
+      default:
+        break
+    }
+    return [key, val]
+  }
+
+  getBorderStyles(el: SVGElement): Styles {
+    if (el.tagName === 'rect') {
+      let width = this.getAttr('stroke-width')
+      let color = this.getAttr('stroke') || 'black'
+      let widthNum = width && Number(parseFloat(width).toFixed(1))
+      if (widthNum) {
+        return { border: `${widthNum}px solid ${formatColor(color)}` }
+      }
+    }
+    return {}
+  }
+
+  getShadowFromFilter(filterVal: string, fill: string | null) {
+    const { root, rect } = this
+    // let realEl = getEl(el, root)
+    // if (!realEl) return ''
+    // let filter = getElByVal(el.getAttribute('filter'), root) as SVGFilterElement | null
+    let filter = getElByVal(filterVal, root) as SVGFilterElement | null
+    if (!filter) return
+    let colorMatrix = filter.querySelector('feColorMatrix') as SVGFEColorMatrixElement | null
+    fill = getAttr(filter, 'fill', root) || fill
+    let color = (fill && getColorWithMatrix(colorMatrix, fill)) || 'black'
+    let $offset = filter.querySelector('feOffset') as SVGFEOffsetElement | null
+    let $blur = filter.querySelector('feGaussianBlur') as SVGFEGaussianBlurElement | null
+    let $composite = filter.querySelector('feComposite') as SVGFECompositeElement | null
+    let $componentTransfer = filter.querySelector(
+      'feComponentTransfer',
+    ) as SVGFEComponentTransferElement | null
+    if ($offset && $blur) {
+      const containsOut = (attr: string | null) => (attr || '').toLowerCase().includes('out')
+      let isOut = containsOut(getAttr($blur, 'result', root))
+      if ($composite) {
+        // ignore
+      } else if ($componentTransfer) {
+        // gravit
+        let $feFuncA = $componentTransfer.querySelector('feFuncA') as SVGFEFuncAElement | null
+        if ($feFuncA) {
+          try {
+            let alpha = $feFuncA.tableValues.baseVal.getItem(1).value
+            color = formatColor(tinycolor(color).setAlpha(alpha))
+          } catch (error) {
+            console.error(error)
+          }
+        }
+      }
+      let dx = getAttr($offset, 'dx', root)
+      let dy = getAttr($offset, 'dy', root)
+      let blur = getAttr($blur, 'stdDeviation', root)
+      return (isOut ? '' : 'inset ') + `${dx}px ${dy}px ${parseInt(blur || '0', 10) * 2}px ${color}`
+    }
+    return
+  }
+  // Handle sketch shadow with inner shadow
+  getShadowNodes(node: SVGElement) {
+    let group = null as SVGGElement | null
     if (
-      siblings.every(
-        el => el.tagName === 'use' || el.tagName === 'rect'
-      )
-    ) { // inner shadow with out shadow
-      if (node.parentElement.getAttribute('filter')) {
-        return siblings.concat(node.parentElement as any)
-      }
-      return siblings
+      node.tagName === 'rect' &&
+      node.parentElement &&
+      node.parentElement instanceof SVGGElement
+    ) {
+      group = node.parentElement
+    } else if (node instanceof SVGGElement) {
+      group = node
     }
-  }
-
-  return null
-}
-
-function getShadowStyles(el: SVGElement, root: SVGSVGElement) {
-  let styles = {} as Styles
-  const shadowNodes = getShadowNodes(el)
-  if (shadowNodes) {
-    let boxShadow: string[] = []
-    for (const node of shadowNodes) {
-      const realNode = getEl(node, root)
-      if (!realNode) continue
-      let fill = node.getAttribute('fill')
-      let filterAttrVal = realNode.getAttribute('filter')
-      let shadow = filterAttrVal && getShadowFromFilter(filterAttrVal, fill, root)
-      if (shadow) {
-        boxShadow.push(shadow)
-      } else {
-        styles = { ...styles, ...getBorderStyles(node) }
+    if (group) {
+      const { children } = group
+      let siblings = [].slice.call(children) as SVGElement[]
+      if (siblings.every(el => el.tagName === 'use' || el.tagName === 'rect')) {
+        // inner shadow with out shadow
+        debugger
+        if (getAttr(group, 'filter', this.root)) {
+          return siblings.concat(node.parentElement as any)
+        }
+        return siblings
       }
     }
-    if (boxShadow.length) {
-      styles['box-shadow'] = boxShadow.join(', ')
-    }
+    return null
   }
-  return styles
-}
 
-function getRectStyles(el: SVGElement, rect: Rect) {
-  const styles = {} as Styles
-  if (['tspan', 'text'].indexOf(el.tagName) < 0) {
-    styles['width'] = Math.round(rect.width) + 'px'
-    styles['height'] = Math.round(rect.height) + 'px'
-  }
-  return styles
-}
-
-function initStyles(el: SVGElement, rect: Rect, root: SVGSVGElement) {
-  let styles = {
-    ...getBorderStyles(el),
-    ...getShadowStyles(el, root),
-    ...getRectStyles(el, rect),
-  }
-  // handle box shadow layer
-
-  return styles
-}
-
-export function getStyle(el: SVGElement, rect: Rect, root: SVGSVGElement) {
-  const tag = el.tagName
-  const elStyle = getComputedStyle(el)
-  let styles = initStyles(el, rect, root)
-  for (let key in defaultStyleProps) {
-    let val = elStyle.getPropertyValue(key)
-    if (!filterStyle(key, val)) {
-      continue
-    }
-    let result = transformAttrToStyle(key, val, styles, tag, elStyle, rect, root)
-    if (result) {
-      let [k, v] = result
-      if (k && v) {
-        [key, val] = [k, v]
-        styles[Utils.slug(key)] = val
+  getShadowStyles() {
+    const { el, root } = this
+    let styles = {} as Styles
+    const shadowNodes = this.getShadowNodes(el)
+    if (shadowNodes) {
+      let boxShadow: string[] = []
+      for (const node of shadowNodes) {
+        const realNode = getEl(node, root)
+        if (!realNode) continue
+        let fill = getAttr(node, 'fill', root)
+        debugger
+        let filterAttrVal = getAttr(realNode, 'filter', root)
+        let shadow = filterAttrVal && this.getShadowFromFilter(filterAttrVal, fill)
+        if (shadow) {
+          boxShadow.push(shadow)
+        } else {
+          styles = { ...styles, ...this.getBorderStyles(node) }
+        }
+      }
+      if (boxShadow.length) {
+        styles['box-shadow'] = boxShadow.join(', ')
       }
     }
+    return styles
   }
-  if (
-    el.parentElement &&
-    el.parentElement.tagName === 'g' &&
-    el.parentElement instanceof SVGElement
-  ) {
-    styles = { ...getStyle(el.parentElement, rect, root), ...styles }
+
+  getRectStyles() {
+    const { el, root, rect } = this
+    const styles = {} as Styles
+    if (['tspan', 'text'].indexOf(el.tagName) < 0) {
+      styles['width'] = Math.round(rect.width) + 'px'
+      styles['height'] = Math.round(rect.height) + 'px'
+    }
+    return styles
   }
-  console.log('styles', styles)
-  return styles
+
+  initStyles() {
+    let styles = {
+      ...this.getBorderStyles(this.el),
+      ...this.getShadowStyles(),
+      ...this.getRectStyles(),
+    }
+    // handle box shadow layer
+
+    return styles
+  }
+  getStyle() {
+    const { root, rect, el, SVGStyle } = this
+    const tag = el.tagName
+    let styles = this.initStyles()
+    for (let key in defaultStyleProps) {
+      let val = SVGStyle[key]
+      if (!val) continue
+      if (!filterStyle(key, val)) continue
+      let result = this.transformAttrToStyle(key, val, styles, tag, SVGStyle)
+      if (result) {
+        let [k, v] = result
+        if (k && v) {
+          [key, val] = [k, v]
+          styles[Utils.slug(key)] = val
+        }
+      }
+    }
+    if (
+      el.parentElement &&
+      el.parentElement.tagName === 'g' &&
+      el.parentElement instanceof SVGElement
+    ) {
+      styles = { ...new StyleParser(el.parentElement, rect, root).getStyle(), ...styles }
+    }
+    console.log('styles', styles)
+    return styles
+  }
 }
 
 export function getCss(el: SVGElement, rect: Rect, root: SVGSVGElement) {
-  const styles = getStyle(el, rect, root)
-  const css = Object.keys(styles).reduce(
-    (acc, k) => {
-      return acc + `${k}: ${styles[k]};\n`
-    }, ''
-  )
+  const styles = new StyleParser(el, rect, root).getStyle()
+  const css = Object.keys(styles).reduce((acc, k) => {
+    return acc + `${k}: ${styles[k]};\n`
+  }, '')
   return css.replace(/(\D)0px/g, '$10')
 }

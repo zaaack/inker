@@ -32,6 +32,7 @@ export const actions = {
     if (selected) {
       state.items = []
       let innerText = selected.node.textContent
+      innerText = innerText && innerText.trim()
       if (innerText) {
         state.items.push({
           title: 'Text Content',
@@ -68,7 +69,7 @@ const panelCss = css`
   .title {
     margin: 0 -15px 0 -20px;
     background-color: rgb(70, 70, 70);
-    box-shadow: 0px 3px 2px black;
+    box-shadow: 2px 3px 2px black;
     font-size: 16px;
     color: #A2A2A2;
     line-height: 30px;
@@ -80,15 +81,21 @@ const panelCss = css`
       width: 14px;
       height: 14px;
       float: right;
-      transition: all .3s ease-in-out;
+      /* transition: all .3s ease-in-out; */
       position: relative;
       top: ${(30 - 14) / 2}px;
 
-      &.anim {
-        transform: scale(1.5);
+      &:active {
+        transform: scale(1.1);
         transform-origin: center center;
         opacity: 0.5;
       }
+
+      /* &.anim {
+        transform: scale(1.5);
+        transform-origin: center center;
+        opacity: 0.5;
+      } */
     }
   }
 

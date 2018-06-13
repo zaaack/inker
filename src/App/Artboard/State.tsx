@@ -9,6 +9,7 @@ export interface SVGFile {
   name: string
   title: string
   content: string
+  uid: string
 }
 
 export interface Rect {
@@ -58,7 +59,13 @@ export const init = () => ({
       x: 0,
       y: 0,
     }
-  }
+  },
+  cmd: Cmd.ofSub<Actions>(
+    _ => {
+      window.addEventListener('mouseup', _.dragEnd)
+      window.addEventListener('mousemove', _.dragMove)
+    }
+  )
 })
 
 function clientRectToRect(r: ClientRect | DOMRect): Rect {
@@ -192,12 +199,11 @@ export const actions = {
           wrapper.innerHTML = ''
           wrapper.innerHTML = artboard.content
           const svg = wrapper.getElementsByTagName('svg')[0]
-          const rect = svg.getBoundingClientRect()
-          wrapper.style.width = rect.width + 'px'
-          wrapper.style.height = rect.height + 'px'
-          const rootRect = clientRectToRect(wrapper.getBoundingClientRect())
-          actions.setRoot(svg, { ...Rect.empty, width: rootRect.width, height: rootRect.height })
-          bindSvgEvents(svg, state, actions, rootRect, svg)
+          const rect = clientRectToRect(svg.getBoundingClientRect())
+          svg.style.width = rect.width + 'px'
+          svg.style.height = rect.height + 'px'
+          actions.setRoot(svg, { ...Rect.empty, width: rect.width, height: rect.height })
+          bindSvgEvents(svg, state, actions, rect, svg)
           actions.setScale(state.scale)
         }
       )
@@ -236,13 +242,15 @@ export const actions = {
     state.initScroll.y = document.documentElement.scrollLeft
     console.log('dragStart', state)
   },
-  dragMove: (e: React.MouseEvent<any>) => (state: State, actions: Actions): Hydux.AR<State, Actions> => {
+  dragMove: (e: MouseEvent) => (state: State, actions: Actions): Hydux.AR<State, Actions> => {
     e.stopPropagation()
     if (!state.isDragging) {
       return
     }
     let deltaX = e.screenX - state.initDrag.x
     let deltaY = e.screenY - state.initDrag.y
+    state.initDrag.x = e.screenX
+    state.initDrag.y = e.screenY
     let scrollLeft = state.initScroll.x - deltaX
     let scrollTop = state.initScroll.y - deltaY
     console.log('dragMove', deltaX, deltaY, scrollLeft, scrollTop)
@@ -250,12 +258,12 @@ export const actions = {
     rafId = requestAnimationFrame(
       () => {
         // el.style.transform = `translate(${deltaX}px, ${deltaY}px)`
-        window.scrollTo(scrollLeft, scrollTop)
+        // window.scrollTo(scrollLeft, scrollTop)
+        window.scrollBy(-deltaX, -deltaY)
       }
     )
   },
-  dragEnd: (e: React.MouseEvent<any>) => (state: State, actions: Actions): Hydux.AR<State, Actions> => {
-    e.stopPropagation()
+  dragEnd: (e: MouseEvent) => (state: State, actions: Actions): Hydux.AR<State, Actions> => {
     console.log('dragEnd')
     state.isDragging = false
   },

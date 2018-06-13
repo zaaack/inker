@@ -1,6 +1,7 @@
 import * as React from 'react'
 import * as Hydux from 'hydux'
 import { css, cx } from 'emotion'
+export * from './State'
 import * as State from './State'
 import * as Utils from 'utils'
 
@@ -14,19 +15,18 @@ type Line = State.Line
 
 const rootCss = css`
   position: relative;
-  padding: ${Utils.TopBarHeight + 100}px ${Utils.SideBarWidth + 200}px;
+  padding: ${Utils.TopBarHeight + 100}px ${Utils.SideBarWidth + 100}px;
+  display: inline-block;
 
   & > .wrapper {
     position: relative;
+    display: inline-block;
     & > .container {
       position: relative;
-      width: auto;
-      height: auto;
+      display: inline-block;
 
-      * > svg {
-        position: absolute;
-        left: 0;
-        top: 0;
+      & > svg {
+        display: inline-block;
         * {
           pointer-events: all;
           cursor: pointer;
@@ -237,9 +237,11 @@ export const view = (state: State, actions: Actions) => {
     <div
       className={rootCss}
       onMouseDown={actions.dragStart}
-      onMouseMove={actions.dragMove}
-      onMouseUp={actions.dragEnd}
-      onMouseOut={actions.dragEnd}
+      onClick={_ => actions.handleClick(null)}
+      // onMouseMove={actions.dragMove}
+      // onMouseUp={actions.dragEnd}
+      // onMouseOut={actions.dragEnd}
+      // onMouseLeave={actions.dragEnd}
     >
       <div className="wrapper">
         <div className="container" id={state.containerId} />

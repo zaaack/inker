@@ -23,7 +23,7 @@ if (process.env.NODE_ENV === 'development') {
     }
   })(app)
   // app = devTools()(app)
-  // app = hmr()(app)
+  app = hmr()(app)
 }
 
 const ctx = app({

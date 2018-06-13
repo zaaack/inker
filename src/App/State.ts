@@ -5,6 +5,7 @@ import * as PropsBar from './PropsBar'
 import * as Parse5 from 'parse5'
 import * as Utils from '../utils'
 import * as Styles from 'App/Artboard/Style'
+import * as Dropzone from 'react-dropzone'
 const testSvg = require('../test/fixtures/svg-measure.svg')
 // const testSvg = require('../test/fixtures/uikit/xd/Category.svg')
 // const testSvg = require('../test/fixtures/work/1.svg')
@@ -23,7 +24,10 @@ export const init = () => {
   let title = Utils.findOne(dom, _ => _.tagName === 'title')
   let name = 'svg-measure'
   return {
-    state: subInits.state,
+    state: {
+      ...subInits.state,
+      dropzoneActive: false,
+    },
     cmd: Cmd.batch<Actions>(
       subInits.cmd,
       Cmd.ofSub(
@@ -31,21 +35,83 @@ export const init = () => {
           _.artboard.setArtboard({
             name,
             content: testSvg,
-            title: title ? title.innerText : name
+            title: title ? title.innerText : name,
+            uid: Utils.uid(),
           })
+          _.sidebar.setArtboards([{
+            name,
+            content: testSvg,
+            title: title ? title.innerText : name,
+            uid: Utils.uid(),
+          }])
+          _.sidebar.toggle(true)
         }
       )
     )
   }
 }
-
+function readSvgFile(file: File) {
+  return new Promise<Artboard.SVGFile | FileReaderProgressEvent>(
+    (res, rej) => {
+      const reader = new FileReader()
+      reader.onload = () => {
+        const svgStr = reader.result
+        let dom = Parse5.parse(svgStr)
+        let title = Utils.findOne(dom, _ => _.tagName === 'title')
+        res({
+          name: file.name,
+          title: title ? title.innerText : name,
+          content: svgStr,
+          uid: Utils.uid(),
+        })
+      }
+      reader.onabort = (e) => {
+        console.error('file reading was aborted', e)
+        res(e)
+      }
+      reader.onerror = e => {
+        console.error('file reading has failed', e)
+        res(e)
+      }
+      reader.readAsText(file)
+    }
+  )
+}
 export const actions = {
   artboard: Artboard.actions,
   sidebar: SideBar.actions,
   propsbar: PropsBar.actions,
+  onDrop: (accepted: Dropzone.ImageFile[], rejected: Dropzone.ImageFile[], event: React.DragEvent<HTMLDivElement>) => (state: State, actions: Actions): Hydux.AR<State, Actions> => {
+
+    return [
+      { dropzoneActive: false },
+      Cmd.ofSub(
+        async _ => {
+          let svgFiles = (await Promise.all(accepted.map(readSvgFile))).filter(
+            (res): res is Artboard.SVGFile => {
+              if ('target' in res) {
+                console.error(new Error(`Read svg file error`), res)
+                return false
+              }
+              return true
+            }
+          )
+          _.sidebar.setArtboards(svgFiles)
+          _.sidebar.toggle(true)
+        }
+      )
+    ]
+  },
+  onDragEnter: () => (state: State, actions: Actions): Hydux.AR<State, Actions> => {
+    return { dropzoneActive: true }
+  },
+  onDragLeave: () => (state: State, actions: Actions): Hydux.AR<State, Actions> => {
+
+    return { dropzoneActive: false }
+  },
 }
 
-Utils.replaceAction(
+Utils.overrideAction(
   actions,
   _ => _.artboard.handleClick,
   selected => (action, ps: State, pa) => {
@@ -53,6 +119,8 @@ Utils.replaceAction(
     if (selected && ps.artboard.root) {
       let css = Styles.getCss(selected.node, selected.rect, ps.artboard.root)
       pa.propsbar.setSelected(selected, css)
+    } else {
+      pa.propsbar.setSelected(selected, '')
     }
     return res
   }

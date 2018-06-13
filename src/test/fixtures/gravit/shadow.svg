@@ -19,7 +19,7 @@
             </filter>
         </defs>
         <g filter="url(#qgiKE7fh5JdiNPOIOIeG1Zx86UbzgvjK)">
-            <rect x="95" y="177" width="103" height="68" transform="matrix(1,0,0,1,0,0)" fill="rgb(235,235,235)" />
+            <rect id="test1" x="95" y="177" width="103" height="68" transform="matrix(1,0,0,1,0,0)" fill="rgb(235,235,235)" />
         </g>
     </g>
 </svg>
