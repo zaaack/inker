@@ -25,13 +25,18 @@ const rootCss = css`
     display: flex;
     align-items: center;
 
-    .btn-menu {
+    .btn{
       width: ${Consts.iconWidth}px;
       height: ${Consts.iconWidth}px;
       cursor: pointer;
+
+      &.github {
+        z-index: 1;
+      }
     }
 
     .title {
+      flex: 1;
       margin-left: ${Consts.titleMarginLeft}px;
       color: rgb(232, 232, 232);
       transition: all .3s ease-in-out;
@@ -63,12 +68,19 @@ export const view = (state: State.State, actions: State.Actions) => {
       {PropsBar.view(state.propsbar, actions.propsbar)}
       <TopBar className="top-bar">
         <div className="top-bar-inner">
-          <div className="btn-menu" onClick={_ => actions.sidebar.toggle()}>
+          <div className="btn menu" onClick={_ => actions.sidebar.toggle()}>
             <Icons.Menu />
           </div>
           <div className="title" style={{ transform: `translateX(${state.sidebar.visible ? Utils.SideBarWidth - Consts.iconWidth - Consts.titleMarginLeft : 0}px)` }}>
             {artboard.title || artboard.name}
           </div>
+          <a
+            href="https://github.com/zaaack/svg-measure"
+            target="_blank"
+            className="btn github"
+          >
+            <Icons.Github />
+          </a>
         </div>
       </TopBar>
       {SideBar.view(

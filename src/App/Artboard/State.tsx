@@ -1,7 +1,5 @@
 import * as React from 'react'
 import * as Hydux from 'hydux'
-import { css, cx } from 'emotion'
-import * as Style from './style'
 
 const { Cmd } = Hydux
 
@@ -119,8 +117,7 @@ export function getNodeRect(el: SVGElement, rootRect: Rect) {
   return rect
 }
 
-const rectRefKey = '@svg-measure/refG'
-const rectKey = '@svg-measure/rect'
+export const IconRectRefKey = '@svg-measure/icon-ref'
 function bindSvgEvents(el: SVGElement, state: State, actions: Actions, rootRect: Rect, root: SVGSVGElement) {
   if (!hoverableTags.has(el.tagName)) {
     return
@@ -140,11 +137,11 @@ function bindSvgEvents(el: SVGElement, state: State, actions: Actions, rootRect:
     $rect.setAttribute('fill', 'rgba(0, 0, 0, 0)')
     $rect.setAttribute('stroke-width', '0')
 
-    $rect[rectRefKey] = el
+    $rect[IconRectRefKey] = el
     el.insertBefore($rect, el.children[0])
   }
   {
-    let node = el[rectRefKey] || el
+    let node = el[IconRectRefKey] || el
     const rect = getNodeRect(node, rootRect)
     el.addEventListener('mouseover', e => {
       e.stopPropagation()

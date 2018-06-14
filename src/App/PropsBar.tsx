@@ -155,6 +155,14 @@ const rootCss = css`
   &::-webkit-scrollbar {
     display: none;
   }
+
+  .info {
+    margin-top: 40px;
+    font-size: 14px;
+    &, a, a:active, a:hover {
+      color: #cecece;
+    }
+  }
 `
 
 export function view(
@@ -174,9 +182,9 @@ export function view(
             />
           )
         )}
-      </div>
-      <div className="powered">
-        Powered by <a href="https://github.com/hydux/hydux">hydux</a>
+        <div className={cx(panelCss, 'info')}>
+          Powered by <a target="_blank" href="https://github.com/hydux/hydux">hydux</a>
+        </div>
       </div>
     </div>
   )

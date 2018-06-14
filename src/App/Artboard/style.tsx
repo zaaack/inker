@@ -1,7 +1,7 @@
 import * as Utils from 'utils'
 import * as tinycolor from 'tinycolor2'
 import * as MathJS from 'mathjs'
-import { Rect } from './State'
+import { Rect, IconRectRefKey } from './State'
 
 export enum Keys {
   shadowNodes = 'shadowNodes',
@@ -53,8 +53,8 @@ function getSVGStyle(el: SVGElement, root: SVGSVGElement): Styles {
     for (let i = 0; i < splits.length; i++) {
       let [header, rulesStr] = splits[i].split('{')
       if (!rulesStr) continue
-      let cls = (header.trim().match(/\.([\w-]+)/) || [])[1]
-      let rule = styles[cls] || (styles[cls] = {})
+      let selector = header.trim()
+      let rule = styles[selector] || (styles[selector] = {})
       mergeStyle(rule, parseStyle(rulesStr))
     }
     return styles
@@ -68,7 +68,6 @@ function getSVGStyle(el: SVGElement, root: SVGSVGElement): Styles {
         .join('')
       cssRules = root[RulesKey] = parseStyles(css)
     }
-    let clses = (el.className && el.className.baseVal || '').split(/\s+/) as string[]
     let elStyle = parseStyle(el.getAttribute('style') || '')
     let attrStyle = getAttrs(el).reduce((acc, attr) => {
       acc[attr.name] = attr.value
@@ -94,7 +93,9 @@ function getSVGStyle(el: SVGElement, root: SVGSVGElement): Styles {
     style = el[SVGStyleKey] = mergeStyle(
       parenStyle,
       attrStyle,
-      ...clses.map(c => cssRules[c] || {}),
+      ...Object.keys(cssRules)
+        .filter(sel => el.matches(sel))
+        .map(s => cssRules[s] || {}),
       elStyle,
     )
     let comStyle = getComputedStyle(el)
@@ -319,18 +320,22 @@ class StyleParser {
     key: string,
     val: string,
     styles: object,
-    tag: string,
     elStyle: Styles,
   ): [string | void, string | void] | void {
     const { root, rect } = this
     const originalKey = key
+    const tag = this.el.tagName
     switch (key) {
       case 'fill': {
         if (tag === 'text' || tag === 'tspan') {
           key = 'color'
           val = parseColor(val)
         } else if (!elStyle.backgroundColor || elStyle.backgroundColor === defaultStyleProps['background-color']) {
-          key = 'background-color'
+          if (this.el[IconRectRefKey]) {
+            key = 'color'
+          } else {
+            key = 'background-color'
+          }
           let el = getElByVal(val, root)
           console.log('el', el && el.tagName, val)
           if (!el) {
@@ -536,13 +541,12 @@ class StyleParser {
   }
   getStyle() {
     const { root, rect, el, SVGStyle } = this
-    const tag = el.tagName
     let styles = {} as Styles
     for (let key in defaultStyleProps) {
       let val = SVGStyle[key]
       if (!val) continue
       if (!filterStyle(key, val)) continue
-      let result = this.transformAttrToStyle(key, val, styles, tag, SVGStyle)
+      let result = this.transformAttrToStyle(key, val, styles, SVGStyle)
       if (result) {
         let [k, v] = result
         if (k && v) {
