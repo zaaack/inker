@@ -105,7 +105,8 @@ const panelCss = css`
     font-size: 14px;
     color: #E8E8E8;
     white-space: pre-wrap;
-    padding: 5px 10px;
+    padding: 10px;
+    line-hight: 1.3;
   }
 `
 

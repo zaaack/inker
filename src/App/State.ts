@@ -28,7 +28,7 @@ export const init = () => {
       subInits.cmd,
       Cmd.ofSub(
         async _ => {
-          const testSvg = await import('../test/fixtures/uikit/xd/Category.svg')
+          const testSvg = (await import('../test/fixtures/uikit/xd/Category.svg')).default
           // const testSvg = require('../test/fixtures/svg-measure.svg')
           let dom = Parse5.parse(testSvg)
           let title = Utils.findOne(dom, _ => _.tagName === 'title')
