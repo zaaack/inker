@@ -73,6 +73,9 @@ export const view = (state: State.State, actions: State.Actions) => {
           </div>
           <div className="title" style={{ transform: `translateX(${state.sidebar.visible ? Utils.SideBarWidth - Consts.iconWidth - Consts.titleMarginLeft : 0}px)` }}>
             {artboard.title || artboard.name}
+            <div className="toolbar">
+
+            </div>
           </div>
           <a
             href="https://github.com/zaaack/svg-measure"

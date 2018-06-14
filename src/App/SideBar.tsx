@@ -34,33 +34,21 @@ const rootCss = css`
   position: fixed;
   left: 0;
   top: 0;
-  width: ${Utils.SideBarWidth + 5}px;
-  padding-right: 5px;
+  width: ${Utils.SideBarWidth}px;
   padding-top: ${Utils.TopBarHeight}px;
   box-sizing: border-box;
   transform: translateX(-100%);
   transition: all .3s ease-in-out;
-
-  /* &::before {
-    content: '';
-    background-color: rgb(46, 46, 46);
-    position: fixed;
-    left: 0;
-    top: 0;
-    width: ${Utils.SideBarWidth}px;
-    height: 100%;
-    z-index: -1;
-  } */
   &.visible {
     transform: translateX(0);
   }
   & > .top-bar {
-    overflow: hidden;
     box-shadow: 0 3px 2px rgba(0, 0, 0, .48);
     width: ${Utils.SideBarWidth}px;
     position: fixed;
     left: 0;
     top: 0;
+    z-index: 1;
 
     .btn-back {
       width: ${Utils.TopBarIconSize}px;

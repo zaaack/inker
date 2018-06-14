@@ -18,7 +18,7 @@ module.exports = {
   output: {
     filename: '[name].js',
     path: DIST,
-    publicPath: DIST,
+    publicPath: '/svg-measure/static/dist/',
     library: '[name]', // needed for dll plugin
   },
 
