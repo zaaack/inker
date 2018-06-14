@@ -75,12 +75,16 @@ module.exports = {
   },
 
   plugins: [
-    !IS_DEV && new Clean(["dist"]),
+    !IS_DEV && new Clean(["dist"], {exclude: ['vendor.js', 'vendor-manifest.json']}),
     IS_DEV && new webpack.NamedModulesPlugin(),
     IS_DEV && new webpack.HotModuleReplacementPlugin(),
     new webpack.DefinePlugin({
       'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
       '__DEV__': JSON.stringify(IS_DEV ? true : false),
+    }),
+    new webpack.DllReferencePlugin({
+      context: __dirname,
+      manifest: require(`${DIST}/vendor-manifest.json`),
     }),
   ].filter(Boolean)
 };

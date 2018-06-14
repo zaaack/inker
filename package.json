@@ -8,6 +8,7 @@
   "scripts": {
     "cp": "rm -r ./docs/static && cp -R ./static ./docs && cp ./index.html ./docs/",
     "start": "NODE_ENV=development webpack-dev-server --config ./webpack.config.js",
+    "build:dll": "NODE_ENV=production webpack --config ./webpack.config.dll.js",
     "build": "NODE_ENV=production webpack && npm run cp",
     "test": "electron-mocha --renderer -r tsconfig-paths/register -r ts-node/register \"src/test/**.test.ts\"",
     "nyc": "nyc --extension .tsx --extension .ts --require ts-node/register -r html npm run test",
