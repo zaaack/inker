@@ -7,8 +7,9 @@ Measure prototype designs by **SVG** files.
 
 Try  it online: <https://zaaack.github.io/svg-measure>
 
+国内镜像: <https://zane_young.gitee.io/svg-measure/>
 
-![](docs/media/capture.png)
+![](https://github.com/zaaack/svg-measure/blob/master/docs/media/capture.png?raw=true)
 
 ## Roadmap
 
