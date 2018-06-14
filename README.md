@@ -8,6 +8,8 @@ Measure prototype designs by **SVG** files.
 Try  it online: <https://zaaack.github.io/svg-measure>
 
 
+![](docs/media/capture.png)
+
 ## Roadmap
 
 * [ ] Scale
