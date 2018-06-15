@@ -89,13 +89,13 @@ function getSVGStyle(el: SVGElement, root: SVGSVGElement): Styles {
         }
       }
     }
-
+    const classStyle = Object.keys(cssRules)
+    .filter(sel => el.matches(sel))
+    .map(s => cssRules[s] || {})
     style = el[SVGStyleKey] = mergeStyle(
       parenStyle,
       attrStyle,
-      ...Object.keys(cssRules)
-        .filter(sel => el.matches(sel))
-        .map(s => cssRules[s] || {}),
+      ...classStyle,
       elStyle,
     )
     let comStyle = getComputedStyle(el)
@@ -104,8 +104,9 @@ function getSVGStyle(el: SVGElement, root: SVGSVGElement): Styles {
         style[key] = comStyle.getPropertyValue(key)
       }
     )
+    console.log('svgstyle', el.tagName, el.className && el.className.baseVal, style)
+    console.log(parenStyle, attrStyle, classStyle, elStyle)
   }
-  console.log('svgstyle', style, el.tagName, el.className && el.className.baseVal)
   return style
 }
 
