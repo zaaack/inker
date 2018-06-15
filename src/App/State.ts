@@ -33,19 +33,21 @@ export const init = () => {
           let dom = Parse5.parse(testSvg)
           let title = Utils.findOne(dom, _ => _.tagName === 'title')
           let name = 'svg-measure'
-          _.artboard.setArtboard({
-            name,
-            content: testSvg,
-            title: title ? title.innerText : name,
-            uid: Utils.uid(),
-          })
-          _.sidebar.setArtboards([{
-            name,
-            content: testSvg,
-            title: title ? title.innerText : name,
-            uid: Utils.uid(),
-          }])
-          _.sidebar.toggle(true)
+          if (!module['hot']) {
+            _.artboard.setArtboard({
+              name,
+              content: testSvg,
+              title: title ? title.innerText : name,
+              uid: Utils.uid(),
+            })
+            _.sidebar.setArtboards([{
+              name,
+              content: testSvg,
+              title: title ? title.innerText : name,
+              uid: Utils.uid(),
+            }])
+            _.sidebar.toggle(true)
+          }
         }
       )
     )

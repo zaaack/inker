@@ -99,7 +99,7 @@ function getSVGStyle(el: SVGElement, root: SVGSVGElement): Styles {
       elStyle,
     )
     let comStyle = getComputedStyle(el)
-    ;['letter-spacing', 'font-weight', 'font-size'].forEach(
+    ;['letter-spacing'].forEach(
       key => {
         style[key] = comStyle.getPropertyValue(key)
       }
@@ -112,14 +112,14 @@ function getSVGStyle(el: SVGElement, root: SVGSVGElement): Styles {
 
 export type Styles = { [k: string]: string }
 const GInheritAttrs = new Set(['filter', 'fill', 'fill-opacity', 'stroke', 'font-size', 'font-weight', 'font-family', 'font-style', 'letter-spacing', 'mask'])
-const TextInheritAttrs = new Set(['fill', 'stroke', 'font-size', 'font-weight', 'font-family', 'font-style'])
+const TextInheritAttrs = new Set(['fill', 'stroke', 'font-size', 'font-weight', 'font-family', 'font-style', 'text-decoration', ''])
 const defaultStyleProps = {
   'font-size': bodyStyle('font-size'),
   'font-weight': bodyStyle('font-weight'),
   color: 'rgb(0, 0, 0)',
   'letter-spacing': 'normal',
   'font-style': 'normal',
-  'text-decoration': 'none solid rgb(0, 0, 0)',
+  'text-decoration': '',
   'line-height': 'normal',
   'background-color': 'rgba(0, 0, 0, 0)',
   'background-image': 'none',
@@ -187,14 +187,14 @@ function getAttr(el: SVGElement, name: string, root: SVGSVGElement) {
   if (val) return val
   return el.getAttribute(name)
 }
-function getEl(el: SVGElement | null, root: SVGSVGElement): SVGElement | null {
+function getRealEl(el: SVGElement | null, root: SVGSVGElement): SVGElement | null {
   if (!el) return null
   if (el.tagName === 'use') {
     const hrefKey = 'xlink:href'
     let href = el.getAttribute(hrefKey)
     if (href) {
       let realEl = root.querySelector(href) as SVGElement | null
-      realEl = realEl && getEl(realEl, root)
+      realEl = realEl && getRealEl(realEl, root)
       if (realEl) {
         realEl = realEl.cloneNode() as SVGElement
         let elStyle = getSVGStyle(el, root)
@@ -213,12 +213,12 @@ function getEl(el: SVGElement | null, root: SVGSVGElement): SVGElement | null {
   return el
 }
 
-function getElByVal(val: string | null, root: SVGSVGElement) {
+function getRefElByVal(val: string | null, root: SVGSVGElement) {
   if (!val) return null
   const url = getUrlVal(val)
   if (!url) return null
   try {
-    let el = getEl(root.querySelector(url) as SVGElement | null, root)
+    let el = getRealEl(root.querySelector(url) as SVGElement | null, root)
     if (!el) return null
     return el
   } catch (error) {
@@ -226,10 +226,10 @@ function getElByVal(val: string | null, root: SVGSVGElement) {
   }
 }
 
-function getChildren(el: SVGElement, root: SVGSVGElement) {
+function getRealChildren(el: SVGElement, root: SVGSVGElement) {
   let children = [] as SVGElement[]
   for (let i = 0; i < el.children.length; i++) {
-    let child = getEl(el.children[i] as SVGElement, root)
+    let child = getRealEl(el.children[i] as SVGElement, root)
     if (child) {
       children.push(child)
     }
@@ -265,7 +265,7 @@ function getColorWithMatrix(el: SVGFEColorMatrixElement | null, fill: string) {
       matrix[matrix.length - 1][i % 5] = item.value
     }
     let m = MathJS.matrix(matrix)
-    m = MathJS.multiply(m, [[rgba.r], [rgba.g], [rgba.b], [rgba.a], [1]])
+    m = MathJS.multiply(m, [[rgba.r], [rgba.g], [rgba.b], [rgba.a], [255]])
     let ma = m.toJSON().data
     let color = tinycolor({
       r: ma[0],
@@ -284,7 +284,17 @@ class StyleParser {
     public rect: Rect,
     public root: SVGSVGElement,
     public SVGStyle = getSVGStyle(el, root),
-  ) {}
+  ) {
+    if (el.tagName === 'use') {
+      let realEl = getRealEl(el, root)
+      if (realEl) {
+        this.SVGStyle = {
+          ...getSVGStyle(realEl, root),
+          ...this.SVGStyle,
+        }
+      }
+    }
+  }
 
   getAttr(name: string) {
     const { el, root } = this
@@ -337,7 +347,7 @@ class StyleParser {
           } else {
             key = 'background-color'
           }
-          let el = getElByVal(val, root)
+          let el = getRefElByVal(val, root)
           console.log('el', el && el.tagName, val)
           if (!el) {
             val = parseColor(val)
@@ -383,7 +393,7 @@ class StyleParser {
           // ignore
         }
         if (!mask) return
-        const children = getChildren(mask as SVGElement, root)
+        const children = getRealChildren(mask as SVGElement, root)
         if (children.length === 1) {
           if (children[0].tagName === 'rect') {
             const s = new StyleParser(children[0], rect, root).getStyle()
@@ -421,10 +431,7 @@ class StyleParser {
 
   getShadowFromFilter(filterVal: string) {
     const { root, rect } = this
-    // let realEl = getEl(el, root)
-    // if (!realEl) return ''
-    // let filter = getElByVal(el.getAttribute('filter'), root) as SVGFilterElement | null
-    let filter = getElByVal(filterVal, root) as SVGFilterElement | null
+    let filter = getRefElByVal(filterVal, root) as SVGFilterElement | null
     if (!filter) return
     let colorMatrix = filter.querySelector('feColorMatrix') as SVGFEColorMatrixElement | null
     let fill = getAttr(filter, 'fill', root) || 'black'
@@ -436,13 +443,14 @@ class StyleParser {
       'feComponentTransfer',
     ) as SVGFEComponentTransferElement | null
     let $flood = filter.querySelector('feFlood') as SVGFEFloodElement | null
-    if ($offset && $blur) {
+    if ($offset || $blur || $composite || $componentTransfer || $flood) {
       const containsOut = (attr: string | null) => {
         let out = (attr || '').toLowerCase()
         return out.includes('out') || out === 'blur' // xd only has blur
       }
 
-      let isOut = containsOut(getAttr($blur, 'result', root))
+      let $resultEl = $offset || $blur || $composite
+      let isOut = $resultEl ? containsOut(getAttr($resultEl, 'result', root)) : true
       if ($componentTransfer) {
         // gravit
         let $feFuncA = $componentTransfer.querySelector('feFuncA') as SVGFEFuncAElement | null
@@ -461,9 +469,9 @@ class StyleParser {
           color = formatColor(tinycolor(color).setAlpha(alpha))
         }
       }
-      let dx = getAttr($offset, 'dx', root) || '0'
-      let dy = getAttr($offset, 'dy', root) || '0'
-      let blur = getAttr($blur, 'stdDeviation', root) || '0'
+      let dx = $offset && getAttr($offset, 'dx', root) || '0'
+      let dy = $offset && getAttr($offset, 'dy', root) || '0'
+      let blur = $blur && getAttr($blur, 'stdDeviation', root) || '0'
       return (isOut ? '' : 'inset ') + `${dx}px ${dy}px ${parseInt(blur || '0', 10) * 2}px ${color}`
     }
     return
@@ -472,7 +480,7 @@ class StyleParser {
   getShadowNodes(node: SVGElement) {
     let group = null as SVGGElement | null
     if (
-      node.tagName === 'rect' &&
+      (node.tagName === 'rect' || node.tagName === 'use') &&
       node.parentElement &&
       node.parentElement instanceof SVGGElement
     ) {
@@ -501,7 +509,7 @@ class StyleParser {
     if (shadowNodes) {
       let boxShadow: string[] = []
       for (const node of shadowNodes) {
-        const realNode = getEl(node, root)
+        const realNode = getRealEl(node, root)
         if (!realNode) continue
         let filterAttrVal = getAttr(realNode, 'filter', root)
         let shadow = filterAttrVal && this.getShadowFromFilter(filterAttrVal)
@@ -557,6 +565,20 @@ class StyleParser {
       }
     }
     Object.assign(styles, this.globalStyles())
+    // optimize
+    if (styles.width === styles.height && styles.width) {
+      let radius = styles['border-radius']
+      let width = parseInt(styles.width, 10)
+      if (`${width / 2}px` === radius) {
+        styles['border-radius'] = '50%'
+      }
+    }
+    if (styles['border-radius']) {
+      styles['overflow'] = 'hidden'
+    }
+    if (styles['font-size'] && /^\d+$/.test(styles['font-size'])) {
+      styles['font-size'] = styles['font-size'] + 'px'
+    }
     return styles
   }
 }

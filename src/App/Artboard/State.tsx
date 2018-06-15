@@ -74,7 +74,7 @@ function clientRectToRect(r: ClientRect | DOMRect): Rect {
     height: r.height,
   }
 }
-export const lineWidth = 2
+export const LineWidth = 1
 
 function calcRectBorderLines(rect: Rect, rootRect: Rect): Line[] {
   function initHorizon(top: number): Line {
@@ -83,7 +83,7 @@ function calcRectBorderLines(rect: Rect, rootRect: Rect): Line[] {
         left: 0,
         top,
         width: rootRect.width,
-        height: lineWidth,
+        height: LineWidth,
       },
       length: rootRect.width,
       direction: 'horizon',
@@ -94,7 +94,7 @@ function calcRectBorderLines(rect: Rect, rootRect: Rect): Line[] {
       rect: {
         left,
         top: 0,
-        width: lineWidth,
+        width: LineWidth,
         height: rootRect.height,
       },
       length: rootRect.height,
@@ -102,13 +102,13 @@ function calcRectBorderLines(rect: Rect, rootRect: Rect): Line[] {
     }
   }
   return [
-    initVertical(rect.left - lineWidth), // left
+    initVertical(rect.left - LineWidth), // left
     initVertical(rect.left + rect.width), // right
-    initHorizon(rect.top - lineWidth), // top
+    initHorizon(rect.top - LineWidth), // top
     initHorizon(rect.top + rect.height), // bottom
   ]
 }
-const hoverableTags = new Set(['g', 'svg', 'rect', 'text', 'tspan', 'path', 'image', 'circle', 'clipPath', 'ellipse', 'a', 'line', 'marker', 'polygon', 'polygon', 'polyline'])
+const hoverableTags = new Set(['g', 'svg', 'rect', 'text', 'tspan', 'path', 'image', 'circle', 'clipPath', 'ellipse', 'a', 'line', 'marker', 'polygon', 'polygon', 'polyline', 'use'])
 
 export function getNodeRect(el: SVGElement, rootRect: Rect) {
   const rect = clientRectToRect(el.getBoundingClientRect())

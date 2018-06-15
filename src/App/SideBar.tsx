@@ -26,6 +26,9 @@ export const actions = {
   },
   setArtboards: (artboards: SVGFile[]) => (state: State, actions: Actions): Hydux.AR<State, Actions> => ({
     artboards
+  }),
+  appendArtboards: (artboards: SVGFile[]) => (state: State, actions: Actions): Hydux.AR<State, Actions> => ({
+    artboards: state.artboards.concat(artboards)
   })
 }
 

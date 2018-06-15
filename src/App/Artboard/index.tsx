@@ -42,12 +42,12 @@ const rootCss = css`
         position: absolute;
       }
       .rect {
-        transform: translate(-${State.lineWidth}px, -${State.lineWidth}px);
+        transform: translate(-${State.LineWidth}px, -${State.LineWidth}px);
         &.selected {
-          border: ${State.lineWidth}px solid red;
+          border: ${State.LineWidth}px solid red;
         }
         &.hover {
-          border: ${State.lineWidth}px dashed green;
+          border: ${State.LineWidth}px dashed green;
         }
       }
       .line {
@@ -74,6 +74,7 @@ const rootCss = css`
           line-height: 1;
           position: absolute;
           border-radius: 5px;
+          opacity: .8;
         }
         &::before {
           top: -26px;
@@ -90,16 +91,21 @@ const rootCss = css`
         &::before {
           content: attr(data-width);
         }
+        &[data-width="0px"]::before {
+          display: none;
+        }
         &::after {
           content: attr(data-height);
         }
       }
       .line.hover {
-        &[data-direction="horizon"]::before {
-          content: attr(data-length);
-        }
+        &[data-direction="horizon"]::before,
         &[data-direction="vertical"]::after {
           content: attr(data-length);
+        }
+        &[data-length="0px"]::before,
+        &[data-length="0px"]::after  {
+          display: none;
         }
       }
     }
@@ -125,10 +131,10 @@ function caleDistanceLines(hover: RectLayer | null, selected: RectLayer | null, 
 
   function initLine(): Rect {
     return {
-      left: hoverRect.left + (hoverRect.width - State.lineWidth) / 2,
-      top: hoverRect.top + (hoverRect.height - State.lineWidth) / 2,
-      width: State.lineWidth,
-      height: State.lineWidth,
+      left: hoverRect.left + (hoverRect.width - State.LineWidth) / 2,
+      top: hoverRect.top + (hoverRect.height - State.LineWidth) / 2,
+      width: State.LineWidth,
+      height: State.LineWidth,
     }
   }
 
