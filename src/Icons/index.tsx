@@ -17,8 +17,8 @@ export const Copy = pure(
   )
 )
 
-export function ArrayLeft() {
-  return (
+export const ArrayLeft = pure(
+  () => (
         <svg
           xmlnsXlink="http://www.w3.org/1999/xlink"
           style={{ isolation: 'isolate', display: 'block' }}
@@ -39,10 +39,10 @@ export function ArrayLeft() {
           />
         </svg>
   )
-}
+)
 
-export function Menu() {
-  return (
+export const Menu = pure(
+  () => (
         <svg
           xmlnsXlink="http://www.w3.org/1999/xlink"
           style={{ isolation: 'isolate', display: 'block' }}
@@ -62,7 +62,7 @@ export function Menu() {
           />
         </svg>
   )
-}
+)
 
 export const Github = pure(
   () => (

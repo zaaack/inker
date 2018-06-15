@@ -74,7 +74,7 @@ function clientRectToRect(r: ClientRect | DOMRect): Rect {
     height: r.height,
   }
 }
-export const lineWidth = 2
+export const lineWidth = 1
 
 function calcRectBorderLines(rect: Rect, rootRect: Rect): Line[] {
   function initHorizon(top: number): Line {
