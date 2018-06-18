@@ -7,11 +7,20 @@ import * as Icons from 'Icons'
 import * as Utils from 'utils'
 import { getIn } from 'hydux-mutator'
 import Clipboard from 'react-clipboard.js'
+// import * as Prism from 'prismjs'
+// import 'prismjs/themes/prism-solarizedlight.css'
+import * as hljs from 'highlight.js/lib/highlight.js'
+// import * as hljs from 'highlight.js'
+import * as hljsCss from 'highlight.js/lib/languages/css.js'
+import 'highlight.js/styles/vs2015.css'
+
+hljs.registerLanguage('css', hljsCss)
 
 const { Cmd } = Hydux
 export interface PanelItem {
   title: string
   content: string
+  processor?: (v: string) => string
 }
 export const init = () => ({
   state: {
@@ -43,6 +52,18 @@ export const actions = {
         state.items.push({
           title: 'CSS',
           content: css,
+          processor(v) {
+            try {
+              v = hljs.highlightAuto(`.cls {${v}}`, ['css']).value.trim()
+              console.log('v', v)
+              v = v.replace(/<[^>]*hljs-selector-class[^>]*>[^<]*<\/span>/, '')
+              v = v.trim().slice(1, -1)
+              return v
+            } catch (error) {
+              console.error(error)
+            }
+            return v
+          }
         })
       }
     }
@@ -69,7 +90,7 @@ const panelCss = css`
   .title {
     margin: 0 -15px 0 -20px;
     background-color: rgb(70, 70, 70);
-    box-shadow: 2px 3px 2px black;
+    box-shadow: 2px 3px 2px rgba(0, 0, 0, .5);
     font-size: 16px;
     color: #A2A2A2;
     line-height: 30px;
@@ -127,7 +148,7 @@ function PropsPanel({
           <Icons.Copy />
         </Clipboard>
       </div>
-      <div className="content">{content}</div>
+      <div className="content" dangerouslySetInnerHTML={{__html: content}}></div>
     </div>
   )
 }
@@ -177,7 +198,7 @@ export function view(
           (item, i) => (
             <PropsPanel
               title={item.title}
-              content={item.content}
+              content={item.processor ? item.processor(item.content) : item.content}
               onCopyAnim={() => actions.setAnimIdx(i)}
               animate={i === state.animIdx}
             />

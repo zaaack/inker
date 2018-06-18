@@ -38,8 +38,29 @@ const rootCss = css`
     .title {
       flex: 1;
       margin-left: ${Consts.titleMarginLeft}px;
+      margin-right: 20px;
       color: rgb(232, 232, 232);
       transition: all .3s ease-in-out;
+    }
+
+    .toolbar {
+      flex: 1;
+      display: inline-flex;
+      margin: 0 20px;
+
+      .btn-group {
+        margin-right: 5px;
+        display: inline-flex;
+        align-items: center;
+      }
+
+      .btn {
+        width: ${Consts.iconWidth}px;
+        height: ${Consts.iconWidth}px;
+        cursor: pointer;
+        text-align: center;
+        line-height: ${Consts.iconWidth}px;
+      }
     }
   }
 `
@@ -74,7 +95,26 @@ export const view = (state: State.State, actions: State.Actions) => {
           <div className="title" style={{ transform: `translateX(${state.sidebar.visible ? Utils.SideBarWidth - Consts.iconWidth - Consts.titleMarginLeft : 0}px)` }}>
             {artboard.title || artboard.name}
             <div className="toolbar">
+              <div className="btn-group">
+                <div
+                  className="btn"
+                  onClick={
+                    _ => actions.artboard.scaleDown()
 
+                  }
+                >
+                  -
+                </div>
+                <div className="label">{state.artboard.scale * 100}%</div>
+                <div
+                  className="btn"
+                  onClick={
+                    _ => actions.artboard.scaleUp()
+                  }
+                >
+                  +
+                </div>
+              </div>
             </div>
           </div>
           <a

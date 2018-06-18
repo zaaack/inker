@@ -12,6 +12,52 @@ import * as Dropzone from 'react-dropzone'
 // const testSvg = require('../test/fixtures/gravit/shadow.svg')
 
 const { Cmd } = Hydux
+let loaded = false
+async function loadDemo(_: Actions) {
+  if (!module['hot'] || !loaded) {
+    loaded = true
+    const testSvg = (await import('../test/fixtures/uikit/xd/Category.svg')).default
+    // const testSvg = require('../test/fixtures/svg-measure.svg')
+    let dom = Parse5.parse(testSvg)
+    let title = Utils.findOne(dom, _ => _.tagName === 'title')
+    let name = 'svg-measure'
+    _.artboard.setArtboard({
+      name,
+      content: testSvg,
+      title: title ? title.innerText : name,
+      uid: Utils.uid(),
+    })
+    _.sidebar.setArtboards([{
+      name,
+      content: testSvg,
+      title: title ? title.innerText : name,
+      uid: Utils.uid(),
+    }])
+    _.sidebar.toggle(true)
+  }
+}
+
+enum KeyCodes {
+  ctrl = 17,
+  cmd = 91,
+  minus = 189,
+  plus = 187,
+}
+async function bindScaleEvents(_: Actions) {
+  window.addEventListener('keydown', e => {
+    if (e.ctrlKey || e.metaKey) {
+      if (e.keyCode === KeyCodes.minus) {
+        _.artboard.scaleDown()
+        e.stopPropagation()
+        e.preventDefault()
+      } else if (e.keyCode === KeyCodes.plus) {
+        _.artboard.scaleUp()
+        e.stopPropagation()
+        e.preventDefault()
+      }
+    }
+  })
+}
 
 export const init = () => {
   const subInits = Hydux.combineInit({
@@ -28,26 +74,8 @@ export const init = () => {
       subInits.cmd,
       Cmd.ofSub(
         async _ => {
-          const testSvg = (await import('../test/fixtures/uikit/xd/Category.svg')).default
-          // const testSvg = require('../test/fixtures/svg-measure.svg')
-          let dom = Parse5.parse(testSvg)
-          let title = Utils.findOne(dom, _ => _.tagName === 'title')
-          let name = 'svg-measure'
-          if (!module['hot']) {
-            _.artboard.setArtboard({
-              name,
-              content: testSvg,
-              title: title ? title.innerText : name,
-              uid: Utils.uid(),
-            })
-            _.sidebar.setArtboards([{
-              name,
-              content: testSvg,
-              title: title ? title.innerText : name,
-              uid: Utils.uid(),
-            }])
-            _.sidebar.toggle(true)
-          }
+          loadDemo(_)
+          bindScaleEvents(_)
         }
       )
     )

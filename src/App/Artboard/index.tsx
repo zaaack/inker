@@ -219,6 +219,11 @@ function Line(
   { line: Line, scale: number, type: string, dashed?: boolean }
 ) {
   const style = scaleRect(line.rect, scale)
+  if (line.direction === 'horizon') {
+    style.height = State.LineWidth
+  } else {
+    style.width = State.LineWidth
+  }
   if (dashed) {
     if (line.direction === 'horizon') {
       style['borderBottomWidth'] = style.height

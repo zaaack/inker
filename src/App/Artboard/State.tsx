@@ -102,9 +102,9 @@ function calcRectBorderLines(rect: Rect, rootRect: Rect): Line[] {
     }
   }
   return [
-    initVertical(rect.left - LineWidth), // left
+    initVertical(rect.left - LineWidth / 2), // left
     initVertical(rect.left + rect.width), // right
-    initHorizon(rect.top - LineWidth), // top
+    initHorizon(rect.top - LineWidth / 2), // top
     initHorizon(rect.top + rect.height), // bottom
   ]
 }
@@ -119,9 +119,9 @@ export function getNodeRect(el: SVGElement, rootRect: Rect) {
 
 export const IconRectRefKey = '@svg-measure/icon-ref'
 function bindSvgEvents(el: SVGElement, state: State, actions: Actions, rootRect: Rect, root: SVGSVGElement) {
-  if (!hoverableTags.has(el.tagName)) {
-    return
-  }
+  if (!hoverableTags.has(el.tagName)) return
+  if (el[IconRectRefKey]) return
+
   const rect = getNodeRect(el, rootRect)
 
   if (
@@ -130,6 +130,7 @@ function bindSvgEvents(el: SVGElement, state: State, actions: Actions, rootRect:
     rect.width < 100 && rect.height < 100
   ) { // Fix SVGGElement cannot click on rect
     let $rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect')
+    $rect.id = 'icon-rect'
     $rect.setAttribute('x', String(rect.left))
     $rect.setAttribute('y', String(rect.top))
     $rect.setAttribute('width', rect.width.toFixed(2))
@@ -138,7 +139,8 @@ function bindSvgEvents(el: SVGElement, state: State, actions: Actions, rootRect:
     $rect.setAttribute('stroke-width', '0')
 
     $rect[IconRectRefKey] = el
-    el.insertBefore($rect, el.children[0])
+    el = $rect
+    root.appendChild($rect)
   }
   {
     let node = el[IconRectRefKey] || el
@@ -219,6 +221,20 @@ export const actions = {
           svg.style.height = state.rootRect.height * scale + 'px'
         }
       )
+    ]
+  },
+  scaleUp: () => (state: State, actions: Actions): Hydux.AR<State, Actions> => {
+    return [state, Cmd.ofSub(_ =>
+      actions.setScale(
+        Math.min(state.scale + .25, 5)
+      ))
+    ]
+  },
+  scaleDown: () => (state: State, actions: Actions): Hydux.AR<State, Actions> => {
+    return [state, Cmd.ofSub(_ =>
+      actions.setScale(
+        Math.max(state.scale - .25, .25)
+      ))
     ]
   },
   handleMouseover: (layer: RectLayer) => (state: State, actions: Actions): Hydux.AR<State, Actions> => {
