@@ -17,7 +17,6 @@ function formatColor(color: tinycolorInstance | string) {
   return color.getAlpha() === 1 ? color.toHexString() : color.toRgbString()
 }
 type CSSStyles = { [k: string]: { [k: string]: string } }
-const SVGStyleKey = '@svg-measure/svg-styles'
 const SVGUseStyleKey = '@svg-measure/svg-use-styles'
 
 function mergeStyle(arg: Styles, ...args: Styles[]) {
@@ -59,54 +58,51 @@ function getSVGStyle(el: SVGElement, root: SVGSVGElement): Styles {
     }
     return styles
   }
-  let style = el[SVGStyleKey]
-  if (!style) {
-    let cssRules = root[RulesKey]
-    if (!cssRules) {
-      let css = ([].slice.call(root.querySelectorAll('style')) as HTMLStyleElement[])
-        .map(s => s.textContent)
-        .join('')
-      cssRules = root[RulesKey] = parseStyles(css)
-    }
-    let elStyle = parseStyle(el.getAttribute('style') || '')
-    let attrStyle = getAttrs(el).reduce((acc, attr) => {
-      acc[attr.name] = attr.value
-      return acc
-    }, {})
-    let parenStyle = {}
-    if (
-      el.parentElement && (['text', 'tspan', 'g'].indexOf(el.parentElement.tagName) >= 0)
-    ) {
-      let pTag = el.parentElement.tagName
-      parenStyle = getSVGStyle(el.parentElement as any, root)
-      let inheritAttrs = GInheritAttrs
-      if (pTag !== 'g') {
-        inheritAttrs = TextInheritAttrs
-      }
-      for (const key in parenStyle) {
-        if (!inheritAttrs.has(key)) {
-          parenStyle[key] = undefined
-        }
-      }
-    }
-    const classStyle = Object.keys(cssRules)
-    .filter(sel => el.matches(sel))
-    .map(s => cssRules[s] || {})
-    style = el[SVGStyleKey] = mergeStyle(
-      parenStyle,
-      attrStyle,
-      ...classStyle,
-      elStyle,
-    )
-    let comStyle = getComputedStyle(el)
-    ;['letter-spacing'].forEach(
-      key => {
-        style[key] = comStyle.getPropertyValue(key)
-      }
-    )
-    console.log('svgstyle', el.tagName, el.className && el.className.baseVal, style)
-    console.log(parenStyle, attrStyle, classStyle, elStyle)
+  let cssRules = root[RulesKey]
+  if (!cssRules) {
+    let css = ([].slice.call(root.querySelectorAll('style')) as HTMLStyleElement[])
+      .map(s => s.textContent)
+      .join('')
+    cssRules = root[RulesKey] = parseStyles(css)
   }
+  let elStyle = parseStyle(el.getAttribute('style') || '')
+  let attrStyle = getAttrs(el).reduce((acc, attr) => {
+    acc[attr.name] = attr.value
+    return acc
+  }, {})
+  let parenStyle = {}
+  if (
+    el.parentElement && (['text', 'tspan', 'g'].indexOf(el.parentElement.tagName) >= 0)
+  ) {
+    let pTag = el.parentElement.tagName
+    parenStyle = getSVGStyle(el.parentElement as any, root)
+    let inheritAttrs = GInheritAttrs
+    if (pTag !== 'g') {
+      inheritAttrs = TextInheritAttrs
+    }
+    for (const key in parenStyle) {
+      if (!inheritAttrs.has(key)) {
+        parenStyle[key] = undefined
+      }
+    }
+  }
+  const classStyle = Object.keys(cssRules)
+  .filter(sel => el.matches(sel))
+  .map(s => cssRules[s] || {})
+  let style = mergeStyle(
+    parenStyle,
+    attrStyle,
+    ...classStyle,
+    elStyle,
+  )
+  let comStyle = getComputedStyle(el)
+  ;['letter-spacing'].forEach(
+    key => {
+      style[key] = comStyle.getPropertyValue(key)
+    }
+  )
+  console.log('svgstyle', el.tagName, el.className && el.className.baseVal, style)
+  console.log(parenStyle, attrStyle, classStyle, elStyle)
   return style
 }
 
@@ -550,6 +546,8 @@ class StyleParser {
   }
   getStyle() {
     const { root, rect, el, SVGStyle } = this
+    const StyleKey = '@svg-measure/styles'
+    if (el[StyleKey]) return el[StyleKey]
     let styles = {} as Styles
     for (let key in defaultStyleProps) {
       let val = SVGStyle[key]
@@ -579,6 +577,7 @@ class StyleParser {
     if (styles['font-size'] && /^\d+$/.test(styles['font-size'])) {
       styles['font-size'] = styles['font-size'] + 'px'
     }
+    el[StyleKey] = styles
     return styles
   }
 }

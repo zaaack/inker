@@ -53,15 +53,15 @@ export const actions = {
           title: 'CSS',
           content: css,
           processor(v) {
-            try {
-              v = hljs.highlightAuto(`.cls {${v}}`, ['css']).value.trim()
-              console.log('v', v)
-              v = v.replace(/<[^>]*hljs-selector-class[^>]*>[^<]*<\/span>/, '')
-              v = v.trim().slice(1, -1)
-              return v
-            } catch (error) {
-              console.error(error)
-            }
+            // try {
+            //   v = hljs.highlightAuto(`.cls {${v}}`, ['css']).value.trim()
+            //   console.log('v', v)
+            //   v = v.replace(/<[^>]*hljs-selector-class[^>]*>[^<]*<\/span>/, '')
+            //   v = v.trim().slice(1, -1)
+            //   return v
+            // } catch (error) {
+            //   console.error(error)
+            // }
             return v
           }
         })
