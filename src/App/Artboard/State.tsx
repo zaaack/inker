@@ -127,20 +127,22 @@ function bindSvgEvents(el: SVGElement, state: State, actions: Actions, rootRect:
   if (
     el.tagName === 'g' &&
     [].some.call(el.children, (n: SVGElement) => n.tagName === 'path') &&
-    rect.width < 100 && rect.height < 100
+    rect.width < 100 && rect.height < 100 &&
+    el.children.length
   ) { // Fix SVGGElement cannot click on rect
     let $rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect')
     $rect.id = 'icon-rect'
-    $rect.setAttribute('x', String(rect.left))
-    $rect.setAttribute('y', String(rect.top))
+    // $rect.setAttribute('x', String(rect.left))
+    // $rect.setAttribute('y', String(rect.top))
     $rect.setAttribute('width', rect.width.toFixed(2))
     $rect.setAttribute('height', rect.height.toFixed(2))
     $rect.setAttribute('fill', 'rgba(0, 0, 0, 0)')
     $rect.setAttribute('stroke-width', '0')
 
     $rect[IconRectRefKey] = el
-    el = $rect
-    root.appendChild($rect)
+    el.insertBefore($rect, el.children[0])
+    // el = $rect
+    // root.appendChild($rect)
   }
   {
     let node = el[IconRectRefKey] || el

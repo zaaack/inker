@@ -318,7 +318,7 @@ class StyleParser {
       })
       key = 'background-image'
       let degree = (-(rad + (deltaX < 0 ? Math.PI / 2 : 0)) + Math.PI / 2) / Math.PI * 180
-      val = `linear-gradient(${Number(degree).toFixed(2)}deg, ${steps.filter(Boolean).join(', ')})`
+      val = `linear-gradient(${Number(degree.toFixed(2))}deg, ${steps.filter(Boolean).join(', ')})`
       return [key, val] as [string, string]
     } else {
       console.error(new Error('unimplemented'))
