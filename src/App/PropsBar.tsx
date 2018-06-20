@@ -13,6 +13,7 @@ import * as hljs from 'highlight.js/lib/highlight.js'
 // import * as hljs from 'highlight.js'
 import * as hljsCss from 'highlight.js/lib/languages/css.js'
 import 'highlight.js/styles/vs2015.css'
+import * as LRUCache from 'lru-cache'
 
 hljs.registerLanguage('css', hljsCss)
 
@@ -31,6 +32,8 @@ export const init = () => ({
   },
   cmd: Cmd.none,
 })
+
+const cache = new LRUCache<string, string>({ max: 10 })
 export const actions = {
   setSelected: (selected: null | RectLayer, css: string) => (state: State, actions: Actions): Hydux.AR<State, Actions> => {
     state = {
@@ -53,15 +56,20 @@ export const actions = {
           title: 'CSS',
           content: css,
           processor(v) {
-            // try {
-            //   v = hljs.highlightAuto(`.cls {${v}}`, ['css']).value.trim()
-            //   console.log('v', v)
-            //   v = v.replace(/<[^>]*hljs-selector-class[^>]*>[^<]*<\/span>/, '')
-            //   v = v.trim().slice(1, -1)
-            //   return v
-            // } catch (error) {
-            //   console.error(error)
-            // }
+            try {
+              let key = v
+              let cachedV = cache.get(key)
+              if (cachedV) return cachedV
+
+              v = hljs.highlightAuto(`.cls {${v}}`, ['css']).value.trim()
+              console.log('v', v)
+              v = v.replace(/<[^>]*hljs-selector-class[^>]*>[^<]*<\/span>/, '')
+              v = v.trim().slice(1, -1)
+              cache.set(key, v)
+              return v
+            } catch (error) {
+              console.error(error)
+            }
             return v
           }
         })
@@ -99,12 +107,11 @@ const panelCss = css`
 
     .btn-copy {
       cursor: pointer;
-      width: 14px;
-      height: 14px;
+      width: 30px;
+      height: 30px;
       float: right;
-      /* transition: all .3s ease-in-out; */
-      position: relative;
-      top: ${(30 - 14) / 2}px;
+      box-sizing: border-box;
+      padding: 8px;
 
       &:active {
         transform: scale(1.1);
@@ -134,11 +141,13 @@ const panelCss = css`
 function PropsPanel({
   title,
   content,
+  displayContent,
   onCopyAnim,
   animate
 }: PanelItem & {
-  onCopyAnim: () => void,
-  animate: boolean,
+  displayContent: string
+  onCopyAnim: () => void
+  animate: boolean
 }) {
   return (
     <div className={panelCss}>
@@ -148,7 +157,7 @@ function PropsPanel({
           <Icons.Copy />
         </Clipboard>
       </div>
-      <div className="content" dangerouslySetInnerHTML={{__html: content}}></div>
+      <div className="content" dangerouslySetInnerHTML={{ __html: displayContent }}></div>
     </div>
   )
 }
@@ -198,7 +207,8 @@ export function view(
           (item, i) => (
             <PropsPanel
               title={item.title}
-              content={item.processor ? item.processor(item.content) : item.content}
+              content={item.content}
+              displayContent={item.processor ? item.processor(item.content) : item.content}
               onCopyAnim={() => actions.setAnimIdx(i)}
               animate={i === state.animIdx}
             />

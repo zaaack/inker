@@ -12,10 +12,9 @@ import * as Dropzone from 'react-dropzone'
 // const testSvg = require('../test/fixtures/gravit/shadow.svg')
 
 const { Cmd } = Hydux
-let loaded = false
 async function loadDemo(_: Actions) {
-  if (!module['hot'] || !loaded) {
-    loaded = true
+  if (!__DEV__ || !window['@demo-loaded']) {
+    window['@demo-loaded'] = true
     const testSvg = (await import('../test/fixtures/uikit/xd/Category.svg')).default
     // const testSvg = require('../test/fixtures/svg-measure.svg')
     let dom = Parse5.parse(testSvg)

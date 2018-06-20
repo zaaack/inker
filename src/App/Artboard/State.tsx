@@ -238,13 +238,13 @@ export const actions = {
     ]
   },
   handleMouseover: (layer: RectLayer) => (state: State, actions: Actions): Hydux.AR<State, Actions> => {
-    return { ...state, hover: layer }
+    return { hover: layer }
   },
   handleMouseout: () => (state: State, actions: Actions): Hydux.AR<State, Actions> => {
-    return { ...state, hover: null }
+    return { hover: null }
   },
   handleClick: (selected: RectLayer | null) => (state: State, actions: Actions): Hydux.AR<State, Actions> => {
-    return { ...state, hover: null, selected }
+    return { hover: null, selected }
   },
   dragStart: (e: React.MouseEvent<any>) => (state: State, actions: Actions): Hydux.AR<State, Actions> => {
     e.stopPropagation()

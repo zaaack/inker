@@ -108,11 +108,12 @@ function getSVGStyle(el: SVGElement, root: SVGSVGElement): Styles {
 
 export type Styles = { [k: string]: string }
 const GInheritAttrs = new Set(['filter', 'fill', 'fill-opacity', 'stroke', 'font-size', 'font-weight', 'font-family', 'font-style', 'letter-spacing', 'mask'])
-const TextInheritAttrs = new Set(['fill', 'stroke', 'font-size', 'font-weight', 'font-family', 'font-style', 'text-decoration', ''])
+const TextInheritAttrs = new Set(['fill', 'stroke', 'font-size', 'font-weight', 'font-family', 'font-style', 'text-decoration', 'line-spacing'])
 const defaultStyleProps = {
   'font-size': bodyStyle('font-size'),
   'font-weight': bodyStyle('font-weight'),
   color: 'rgb(0, 0, 0)',
+  'line-spacing': '',
   'letter-spacing': 'normal',
   'font-style': 'normal',
   'text-decoration': '',
@@ -302,8 +303,8 @@ class StyleParser {
       const getVal = (e: SVGAnimatedLength) => e.baseVal.value
       const deltaX = getVal(el.x2) - getVal(el.x1)
       const deltaY = getVal(el.y2) - getVal(el.y1)
-      const cos = deltaY / Math.sqrt(Math.pow(deltaX, 2) + Math.pow(deltaY, 2))
-      const degree = Math.acos(cos)
+      const cos = deltaX / Math.sqrt(Math.pow(deltaX, 2) + Math.pow(deltaY, 2))
+      const rad = Math.acos(cos)
       let steps: (string | void)[] = [].map.call(el.children, (el: SVGStopElement) => {
         const offset = getAttr(el, 'offset', this.root)
         let color = getAttr(el, 'stop-color', this.root)
@@ -316,7 +317,8 @@ class StyleParser {
         return `${formatColor(rgba)} ${offset}`
       })
       key = 'background-image'
-      val = `linear-gradient(${Number(degree.toFixed(2))}deg, ${steps.filter(Boolean).join(', ')})`
+      let degree = (-(rad + (deltaX < 0 ? Math.PI / 2 : 0)) + Math.PI / 2) / Math.PI * 180
+      val = `linear-gradient(${Number(degree).toFixed(2)}deg, ${steps.filter(Boolean).join(', ')})`
       return [key, val] as [string, string]
     } else {
       console.error(new Error('unimplemented'))
@@ -378,6 +380,10 @@ class StyleParser {
         } else {
           key = ''
         }
+        break
+      case 'line-spacing':
+        key = 'line-height'
+        val = val + 'px'
         break
       case 'mask': {
         let sel = getUrlVal(val)
@@ -544,6 +550,28 @@ class StyleParser {
     }
     return styles
   }
+  optimizeStyle(styles: Styles) {
+    // optimize
+    if (styles.width === styles.height && styles.width) {
+      let radius = styles['border-radius']
+      let width = parseInt(styles.width, 10)
+      if (`${width / 2}px` === radius) {
+        styles['border-radius'] = '50%'
+      }
+    }
+    if (styles['font-size'] && /^\d+$/.test(styles['font-size'])) {
+      styles['font-size'] = styles['font-size'] + 'px'
+    }
+    if (
+      styles['font-size'] &&
+      styles['line-hight'] &&
+      styles['line-hight'].endsWith('px')
+    ) {
+      let lineHight = parseInt(styles['line-hight'], 10)
+      let fontSize = parseInt(styles['font-size'], 10)
+      styles['line-hight'] = String(Number((lineHight / fontSize).toFixed(2)))
+    }
+  }
   getStyle() {
     const { root, rect, el, SVGStyle } = this
     const StyleKey = '@svg-measure/styles'
@@ -563,20 +591,7 @@ class StyleParser {
       }
     }
     Object.assign(styles, this.globalStyles())
-    // optimize
-    if (styles.width === styles.height && styles.width) {
-      let radius = styles['border-radius']
-      let width = parseInt(styles.width, 10)
-      if (`${width / 2}px` === radius) {
-        styles['border-radius'] = '50%'
-      }
-    }
-    if (styles['border-radius']) {
-      styles['overflow'] = 'hidden'
-    }
-    if (styles['font-size'] && /^\d+$/.test(styles['font-size'])) {
-      styles['font-size'] = styles['font-size'] + 'px'
-    }
+    this.optimizeStyle(styles)
     el[StyleKey] = styles
     return styles
   }
@@ -587,5 +602,8 @@ export function getCss(el: SVGElement, rect: Rect, root: SVGSVGElement) {
   const css = Object.keys(styles).reduce((acc, k) => {
     return acc.push(`${k}: ${styles[k]};\n`), acc
   }, [] as string[])
-  return css.join('').replace(/(\D)0px/g, '$10')
+  return css.join('')
+    .replace(/(\D)0px/g, '$10')
+    .replace(/(\D)0\./g, '$1.')
+
 }

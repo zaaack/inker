@@ -27,6 +27,7 @@ const rootCss = css`
 
       & > svg {
         display: inline-block;
+        background: white;
         * {
           pointer-events: all;
           cursor: pointer;
@@ -91,11 +92,12 @@ const rootCss = css`
         &::before {
           content: attr(data-width);
         }
-        &[data-width="0px"]::before {
-          display: none;
-        }
         &::after {
           content: attr(data-height);
+        }
+        &[data-width="0px"]::before,
+        &[data-height="0px"]::after {
+          display: none;
         }
       }
       .line.hover {
@@ -262,8 +264,8 @@ export const view = (state: State, actions: Actions) => {
               key={'rect'}
               className="rect selected"
               style={scaleRect(state.selected.rect, state.scale)}
-              data-width={Math.round(state.selected.rect.width) + 'px'}
-              data-height={Math.round(state.selected.rect.height) + 'px'}
+              data-width={Math.round(state.hover ? 0 : state.selected.rect.width) + 'px'}
+              data-height={Math.round(state.hover ? 0 : state.selected.rect.height) + 'px'}
             />,
             state.selected.lines.map(
               (line, j) => (

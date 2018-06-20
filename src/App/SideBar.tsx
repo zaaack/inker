@@ -89,6 +89,7 @@ const rootCss = css`
         max-height: 280px;
         background: no-repeat center top;
         background-size: cover;
+        background-color: white;
         display: block;
         margin: 0 auto;
       }
