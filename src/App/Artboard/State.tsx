@@ -1,41 +1,10 @@
 import * as React from 'react'
 import * as Hydux from 'hydux'
+export * from './utils'
+import { SVGFile, Rect, Line, RectLayer, IconRectRefKey } from './utils'
+import * as Style from './style'
 
 const { Cmd } = Hydux
-
-export interface SVGFile {
-  name: string
-  title: string
-  content: string
-  uid: string
-}
-
-export interface Rect {
-  left: number
-  top: number
-  width: number
-  height: number
-}
-
-export interface Line {
-  rect: Rect
-  length: number
-  direction: 'horizon' | 'vertical'
-}
-export namespace Rect {
-  export let empty: Rect = {
-    left: 0,
-    top: 0,
-    width: 0,
-    height: 0,
-  }
-}
-
-export interface RectLayer {
-  node: SVGElement
-  rect: Rect
-  lines: Line[]
-}
 
 export const init = () => ({
   state: {
@@ -66,14 +35,6 @@ export const init = () => ({
   )
 })
 
-function clientRectToRect(r: ClientRect | DOMRect): Rect {
-  return {
-    left: r.left,
-    top: r.top,
-    width: r.width,
-    height: r.height,
-  }
-}
 export const LineWidth = 1
 
 function calcRectBorderLines(rect: Rect, rootRect: Rect): Line[] {
@@ -102,22 +63,21 @@ function calcRectBorderLines(rect: Rect, rootRect: Rect): Line[] {
     }
   }
   return [
-    initVertical(rect.left - LineWidth / 2), // left
+    initVertical(rect.left - LineWidth), // left
     initVertical(rect.left + rect.width), // right
-    initHorizon(rect.top - LineWidth / 2), // top
+    initHorizon(rect.top - LineWidth), // top
     initHorizon(rect.top + rect.height), // bottom
   ]
 }
 const hoverableTags = new Set(['g', 'svg', 'rect', 'text', 'tspan', 'path', 'image', 'circle', 'clipPath', 'ellipse', 'a', 'line', 'marker', 'polygon', 'polygon', 'polyline', 'use'])
 
 export function getNodeRect(el: SVGElement, rootRect: Rect) {
-  const rect = clientRectToRect(el.getBoundingClientRect())
+  const rect = Rect.fromEl(el)
   rect.left -= rootRect.left
   rect.top -= rootRect.top
   return rect
 }
 
-export const IconRectRefKey = '@svg-measure/icon-ref'
 function bindSvgEvents(el: SVGElement, state: State, actions: Actions, rootRect: Rect, root: SVGSVGElement) {
   if (!hoverableTags.has(el.tagName)) return
   if (el[IconRectRefKey]) return
@@ -201,12 +161,20 @@ export const actions = {
           wrapper.innerHTML = ''
           wrapper.innerHTML = artboard.content
           const svg = wrapper.getElementsByTagName('svg')[0]
-          const rect = clientRectToRect(svg.getBoundingClientRect())
+          svg.id = 'artboard-svg'
+          if (!svg.getAttribute('width')) {
+            svg.setAttribute('width', String(svg.viewBox.baseVal.width))
+          }
+          if (!svg.getAttribute('height')) {
+            svg.setAttribute('height', String(svg.viewBox.baseVal.height))
+          }
+          const rect = Rect.fromEl(svg)
           svg.style.width = rect.width + 'px'
           svg.style.height = rect.height + 'px'
           wrapper.draggable = false
           svg['draggable'] = false
           actions.setRoot(svg, { ...Rect.empty, width: rect.width, height: rect.height })
+          Style.fixLineHeight(svg)
           bindSvgEvents(svg, state, actions, rect, svg)
           actions.setScale(state.scale)
         }

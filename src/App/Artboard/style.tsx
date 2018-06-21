@@ -1,7 +1,7 @@
 import * as Utils from 'utils'
 import * as tinycolor from 'tinycolor2'
 import * as MathJS from 'mathjs'
-import { Rect, IconRectRefKey } from './State'
+import { Rect, IconRectRefKey, TextFixedRect } from './utils'
 
 export enum Keys {
   shadowNodes = 'shadowNodes',
@@ -107,8 +107,8 @@ function getSVGStyle(el: SVGElement, root: SVGSVGElement): Styles {
 }
 
 export type Styles = { [k: string]: string }
-const GInheritAttrs = new Set(['filter', 'fill', 'fill-opacity', 'stroke', 'font-size', 'font-weight', 'font-family', 'font-style', 'letter-spacing', 'mask'])
-const TextInheritAttrs = new Set(['fill', 'stroke', 'font-size', 'font-weight', 'font-family', 'font-style', 'text-decoration', 'line-spacing'])
+const GInheritAttrs = new Set(['filter', 'fill', 'fill-opacity', 'stroke', 'font-size', 'font-weight', 'font-family', 'font-style', 'letter-spacing', 'text-decoration', 'line-spacing', 'mask'])
+const TextInheritAttrs = new Set(['fill', 'fill-opacity', 'stroke', 'font-size', 'font-weight', 'font-family', 'font-style', 'text-decoration', 'line-spacing'])
 const defaultStyleProps = {
   'font-size': bodyStyle('font-size'),
   'font-weight': bodyStyle('font-weight'),
@@ -302,9 +302,12 @@ class StyleParser {
     if (el instanceof SVGLinearGradientElement) {
       const getVal = (e: SVGAnimatedLength) => e.baseVal.value
       const deltaX = getVal(el.x2) - getVal(el.x1)
-      const deltaY = getVal(el.y2) - getVal(el.y1)
+      const deltaY = getVal(el.y1) - getVal(el.y2) // fix coordinate
       const cos = deltaX / Math.sqrt(Math.pow(deltaX, 2) + Math.pow(deltaY, 2))
-      const rad = Math.acos(cos)
+      let deg = Math.acos(cos) / Math.PI * 180
+      if (deltaY < 0) {
+        deg = -deg
+      }
       let steps: (string | void)[] = [].map.call(el.children, (el: SVGStopElement) => {
         const offset = getAttr(el, 'offset', this.root)
         let color = getAttr(el, 'stop-color', this.root)
@@ -317,7 +320,7 @@ class StyleParser {
         return `${formatColor(rgba)} ${offset}`
       })
       key = 'background-image'
-      let degree = (-(rad + (deltaX < 0 ? Math.PI / 2 : 0)) + Math.PI / 2) / Math.PI * 180
+      let degree = -deg + 90
       val = `linear-gradient(${Number(degree.toFixed(2))}deg, ${steps.filter(Boolean).join(', ')})`
       return [key, val] as [string, string]
     } else {
@@ -364,6 +367,7 @@ class StyleParser {
       }
       case 'fill-opacity':
         key = 'opacity'
+        val = String(Number(Number(val).toFixed(2)))
         break
       case 'rx':
       case 'ry':
@@ -474,7 +478,7 @@ class StyleParser {
       let dx = $offset && getAttr($offset, 'dx', root) || '0'
       let dy = $offset && getAttr($offset, 'dy', root) || '0'
       let blur = $blur && getAttr($blur, 'stdDeviation', root) || '0'
-      return (isOut ? '' : 'inset ') + `${dx}px ${dy}px ${parseInt(blur || '0', 10) * 2}px ${color}`
+      return (isOut ? '' : 'inset ') + `${dx}px ${dy}px ${parseFloat(blur || '0') * 2}px ${color}`
     }
     return
   }
@@ -542,14 +546,27 @@ class StyleParser {
     return styles
   }
 
-  globalStyles() {
-    let styles = {
+  globalStyles(styles: Styles) {
+    let { el } = this
+    styles = {
+      ...styles,
       ...this.getBorderStyles(this.el),
       ...this.getShadowStyles(),
       ...this.getRectStyles(),
     }
-    return styles
+    if (!styles['line-height']) {
+      if (el instanceof SVGTextElement || el instanceof SVGTSpanElement) {
+        if (el instanceof SVGTextElement) {
+          el = el.closest('text') as SVGTextElement
+        }
+        let lineHeight = getTextLineHeight(el as SVGTextElement)
+        if (lineHeight) {
+          styles['line-height'] = lineHeight + 'px'
+        }
+      }
+    }
   }
+
   optimizeStyle(styles: Styles) {
     // optimize
     if (styles.width === styles.height && styles.width) {
@@ -559,6 +576,7 @@ class StyleParser {
         styles['border-radius'] = '50%'
       }
     }
+
     if (styles['font-size'] && /^\d+$/.test(styles['font-size'])) {
       styles['font-size'] = styles['font-size'] + 'px'
     }
@@ -570,6 +588,20 @@ class StyleParser {
       let lineHight = parseInt(styles['line-hight'], 10)
       let fontSize = parseInt(styles['font-size'], 10)
       styles['line-hight'] = String(Number((lineHight / fontSize).toFixed(2)))
+    }
+
+    function mergeOpacity(key: string) {
+      let opacity = Number(styles['opacity'])
+      let color = styles[key] && tinycolor(styles[key])
+      if (color && (color.getAlpha() === 1)) {
+        color.setAlpha(opacity)
+        styles[key] = color.toRgbString()
+        delete styles['opacity']
+      }
+    }
+    if (styles['opacity']) {
+      mergeOpacity('background-color')
+      mergeOpacity('color')
     }
   }
   getStyle() {
@@ -590,7 +622,7 @@ class StyleParser {
         }
       }
     }
-    Object.assign(styles, this.globalStyles())
+    this.globalStyles(styles)
     this.optimizeStyle(styles)
     el[StyleKey] = styles
     return styles
@@ -606,4 +638,67 @@ export function getCss(el: SVGElement, rect: Rect, root: SVGSVGElement) {
     .replace(/(\D)0px/g, '$10')
     .replace(/(\D)0\./g, '$1.')
 
+}
+
+function getTextLineHeight(el: SVGTextElement) {
+  let lineSpacing = el.getAttribute('line-spacing')
+  if (lineSpacing) return Number(lineSpacing)
+  let tspans: SVGTSpanElement[] = [].slice.call(el.querySelectorAll('tspan'))
+  let ys = [] as number[]
+  for (const tspan of tspans) {
+    if (tspan.getAttribute('y')) {
+      let y = Number(tspan.getAttribute('y'))
+      if (!ys.length || Math.abs(ys[ys.length - 1] - y) < 5) {
+        ys.push(y)
+      }
+    }
+  }
+  let lineHeight = ys.reduce((acc, r) => acc - r === 0 ? acc : 0, 0) | 0
+  if (!lineHeight) return
+  return lineHeight
+}
+
+export function fixLineHeight(svg: SVGElement) {
+  let textEls = Array.from(svg.querySelectorAll('text'))
+  let gEls = Array.from(svg.querySelectorAll('g[line-spacing]'))
+  gEls.forEach(g => {
+    textEls.push(...Array.from(g.querySelectorAll('text')).map(text => {
+      if (!text.getAttribute('line-spacing')) {
+        text.setAttribute('line-spacing', g.getAttribute('line-spacing') || '')
+      }
+      return text
+    }))
+  })
+  textEls = Array.from(new Set(textEls))
+  for (const text of textEls) {
+    let rect = Rect.fromEl(text)
+    let lineHeight = getTextLineHeight(text)
+    if (lineHeight) {
+      let tspans: SVGTSpanElement[] = Array.from(text.querySelectorAll('tspan'))
+      let ys = [] as number[]
+      for (const tspan of tspans) {
+        if (tspan.getAttribute('y')) {
+          let y = Number(tspan.getAttribute('y'))
+          if (!ys.length || Math.abs(ys[ys.length - 1] - y) > 5) {
+            ys.push(y)
+          }
+        }
+      }
+      let realHeight = ys.length * lineHeight
+      let offset = rect.height - realHeight
+      rect.height = realHeight
+      if (offset > 0) {
+        let eachOffset = offset / ys.length
+        for (const tspan of tspans) {
+          if (tspan.getAttribute('y')) {
+            let y = Number(tspan.getAttribute('y'))
+            tspan.setAttribute('y', String(y - eachOffset / 2))
+          }
+        }
+      }
+      text[TextFixedRect] = rect
+      // tspan.getBoundingRect just like text in chrome, not sure it is bug or spec
+      tspans.forEach(tspan => (tspan[TextFixedRect] = rect))
+    }
+  }
 }
