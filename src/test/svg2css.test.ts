@@ -31,7 +31,7 @@ namespace files {
 function testCss($svg: SVGSVGElement, sel: string, expect: string, msg?: string) {
   let el = $svg.querySelector(sel)! as SVGRectElement
   let rect = getNodeRect(el, $svg.getBoundingClientRect())
-  let result = Styles.getCss(el, rect, $svg).trim()
+  let result = Styles.getCss(el, $svg, rect).trim()
   console.log('el', el.outerHTML, result)
   expect = expect.split('\n').map(s => s.trim()).join('\n').trim()
   assert.equal(result, expect, msg || sel)

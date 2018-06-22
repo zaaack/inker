@@ -1,9 +1,13 @@
 const webpack = require('webpack')
 const Clean = require('clean-webpack-plugin')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
+const HtmlWebpackHarddiskPlugin = require('html-webpack-harddisk-plugin')
+const AutoDllPlugin = require('autodll-webpack-plugin')
+const OfflinePlugin = require('offline-plugin');
 // const cssModules = require('./tools/webpack-blocks/css-loader')
 const path = require('path')
 
-const IS_DEV = process.env.NODE_ENV === 'development'
+const __DEV__ = process.env.NODE_ENV === 'development'
 
 const DIST = `${__dirname}/static/dist/`
 
@@ -13,7 +17,7 @@ module.exports = {
     bundle: "./src/index.js",
   },
   output: {
-    filename: "[name].js",
+    filename: "[name]_[hash:5].js",
     path: DIST,
     publicPath: '/svg-measure/static/dist/',
   },
@@ -75,16 +79,54 @@ module.exports = {
   },
 
   plugins: [
-    !IS_DEV && new Clean(["dist"], {exclude: ['vendor.js', 'vendor-manifest.json']}),
-    IS_DEV && new webpack.NamedModulesPlugin(),
-    IS_DEV && new webpack.HotModuleReplacementPlugin(),
+    !__DEV__ && new Clean(["static/dist/!(vendor*.js)"]),
+    __DEV__ && new webpack.NamedModulesPlugin(),
+    __DEV__ && new webpack.HotModuleReplacementPlugin(),
     new webpack.DefinePlugin({
       'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
-      '__DEV__': JSON.stringify(IS_DEV ? true : false),
+      '__DEV__': JSON.stringify(__DEV__ ? true : false),
     }),
-    new webpack.DllReferencePlugin({
-      context: __dirname,
-      manifest: require(`${DIST}/vendor-manifest.json`),
+    // new webpack.DllReferencePlugin({
+    //   context: __dirname,
+    //   manifest: require(`${DIST}/vendor-manifest.json`),
+    // }),
+    new HtmlWebpackPlugin({
+      __DEV__: __DEV__,
+      template: './src/index.ejs',
+      filename: __DEV__ ? '../../index.html' : '../index.html',
+      inject: false,
+      alwaysWriteToDisk: true
     }),
-  ].filter(Boolean)
+    new HtmlWebpackHarddiskPlugin(),
+
+    new AutoDllPlugin({
+      inject: true, // will inject the DLL bundle to index.html
+      debug: true,
+      filename: '[name]_[hash:5].js',
+      entry: {
+        vendor: [
+          'react', 'emotion', 'hydux', 'hydux-mutator', 'hydux-react',
+          'lru-cache', 'parse5', 'react-clipboard.js', 'react-contexify',
+          'react-dropzone', 'tinycolor2', 'tslib', './src/vendor.ts'
+        ]
+      }
+    }),
+    !__DEV__ && new OfflinePlugin({
+      appShell: '/svg-measure/',
+      responseStrategy: 'cache-first',
+      caches: {
+        main: ['**/*.js', '**/*.{svg,png,jpg}'],
+				additional: ['*.chunk.js', '*.worker.js', ':externals:'],
+				optional: [':rest:']
+      },
+      externals: [
+        '/svg-measure/'
+      ],
+      exclude: ['**/.*', '**/*.map', '**/*.gz'],
+      ServiceWorker: {
+        events: true,
+        publicPath: '/svg-measure/sw.js'
+      }
+    }),
+  ].filter(Boolean),
 };

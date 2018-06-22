@@ -150,7 +150,7 @@ Utils.overrideAction(
   selected => (action, ps: State, pa) => {
     let res = action(selected)
     if (selected && ps.artboard.root) {
-      let css = Styles.getCss(selected.node, selected.rect, ps.artboard.root)
+      let css = Styles.getCss(selected.node, ps.artboard.root, selected.rect)
       console.log(selected.node, css)
       pa.propsbar.setSelected(selected, css)
     } else {

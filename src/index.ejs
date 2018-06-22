@@ -4,18 +4,18 @@
   <meta charset="UTF-8">
   <title>SVG Measure</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
+  <% for (var css in htmlWebpackPlugin.files.css) { %>
+    <link href="<%= htmlWebpackPlugin.css[css] %>" rel="stylesheet">
+  <% } %>
 </head>
 
-
+<% console.log(htmlWebpackPlugin.options, htmlWebpackPlugin.files) %>
 <body>
   <div id="root"></div>
-  
-  <script src="/svg-measure/static/dist/vendor_7a374.js"></script>
-  
-  <script src="/svg-measure/static/dist/bundle_2fd38.js"></script>
-  
-  
+  <% for (var js in htmlWebpackPlugin.files.js) { %>
+  <script src="<%= htmlWebpackPlugin.files.js[js] %>"></script>
+  <% } %>
+  <% if (!htmlWebpackPlugin.options.__DEV__) { %>
 
     <script async type="text/javascript" src="//tajs.qq.com/stats?sId=65894773" charset="UTF-8"></script>
 
@@ -28,6 +28,6 @@
 
       gtag('config', 'UA-71560274-4');
     </script>
-  
+  <% } %>
 </body>
 </html>

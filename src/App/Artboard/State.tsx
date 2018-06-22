@@ -1,7 +1,7 @@
 import * as React from 'react'
 import * as Hydux from 'hydux'
 export * from './utils'
-import { SVGFile, Rect, Line, RectLayer, IconRectRefKey } from './utils'
+import { SVGFile, Rect, Line, RectLayer, IconRectRefKey, RectKey } from './utils'
 import * as Style from './style'
 
 const { Cmd } = Hydux
@@ -83,7 +83,7 @@ function bindSvgEvents(el: SVGElement, state: State, actions: Actions, rootRect:
   if (el[IconRectRefKey]) return
 
   const rect = getNodeRect(el, rootRect)
-
+  el[RectKey] = rect
   if (
     el.tagName === 'g' &&
     [].some.call(el.children, (n: SVGElement) => n.tagName === 'path') &&

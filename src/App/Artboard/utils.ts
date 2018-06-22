@@ -50,3 +50,4 @@ export interface RectLayer {
 }
 export const IconRectRefKey = '@svg-measure/icon-ref'
 export const TextFixedRect = '@svg-measure/text-fixed-rect'
+export const RectKey = '@svg-measure/rect'

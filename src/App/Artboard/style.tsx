@@ -1,7 +1,7 @@
 import * as Utils from 'utils'
 import * as tinycolor from 'tinycolor2'
 import * as MathJS from 'mathjs'
-import { Rect, IconRectRefKey, TextFixedRect } from './utils'
+import { Rect, IconRectRefKey, TextFixedRect, RectKey } from './utils'
 
 export enum Keys {
   shadowNodes = 'shadowNodes',
@@ -31,7 +31,12 @@ function mergeStyle(arg: Styles, ...args: Styles[]) {
   return styles
 }
 
-function getSVGStyle(el: SVGElement, root: SVGSVGElement): Styles {
+function getSVGStyle(
+  el: SVGElement,
+  root: SVGSVGElement, {
+    onlySelf = false
+  } = {},
+): Styles {
   const RulesKey = '@svg-measure/rules'
   function parseStyle(rulesStr: string) {
     let rule = {} as { [k: string]: string }
@@ -72,7 +77,8 @@ function getSVGStyle(el: SVGElement, root: SVGSVGElement): Styles {
   }, {})
   let parenStyle = {}
   if (
-    el.parentElement && (['text', 'tspan', 'g'].indexOf(el.parentElement.tagName) >= 0)
+    el.parentElement && (['text', 'tspan', 'g'].indexOf(el.parentElement.tagName) >= 0) &&
+    !onlySelf
   ) {
     let pTag = el.parentElement.tagName
     parenStyle = getSVGStyle(el.parentElement as any, root)
@@ -86,10 +92,38 @@ function getSVGStyle(el: SVGElement, root: SVGSVGElement): Styles {
       }
     }
   }
+
+  function sameRect(rect1: Rect, rect2: Rect) {
+    return ['width', 'height', 'left', 'top'].every(
+      key => Math.abs(rect1[key] - rect2[key]) < 3
+    )
+  }
+  let siblingsStyles = {} as Styles
+   // merge overlap siblings styles
+  if (!onlySelf) {
+    let children: SVGElement[] = [].slice.call(el.parentElement ? el.parentElement.children : [])
+    for (const child of children) {
+      if (
+        (child.tagName === 'rect' ||
+          child.tagName === 'use') &&
+        child !== el &&
+        sameRect(
+          child.getBoundingClientRect(),
+          el.getBoundingClientRect()
+        )
+      ) {
+        let childStyles = getSVGStyle(child, root, { onlySelf: true })
+        for (const key in childStyles) {
+          siblingsStyles[key] = childStyles[key]
+        }
+      }
+    }
+  }
   const classStyle = Object.keys(cssRules)
   .filter(sel => el.matches(sel))
   .map(s => cssRules[s] || {})
   let style = mergeStyle(
+    siblingsStyles,
     parenStyle,
     attrStyle,
     ...classStyle,
@@ -278,8 +312,8 @@ function getColorWithMatrix(el: SVGFEColorMatrixElement | null, fill: string) {
 class StyleParser {
   constructor(
     public el: SVGElement,
-    public rect: Rect,
     public root: SVGSVGElement,
+    public rect: Rect = el[RectKey],
     public SVGStyle = getSVGStyle(el, root),
   ) {
     if (el.tagName === 'use') {
@@ -402,7 +436,7 @@ class StyleParser {
         const children = getRealChildren(mask as SVGElement, root)
         if (children.length === 1) {
           if (children[0].tagName === 'rect') {
-            const s = new StyleParser(children[0], rect, root).getStyle()
+            const s = new StyleParser(children[0], root, rect).getStyle()
             if (s['border-radius']) {
               styles['border-radius'] = s['border-radius']
             }
@@ -548,12 +582,12 @@ class StyleParser {
 
   globalStyles(styles: Styles) {
     let { el } = this
-    styles = {
-      ...styles,
-      ...this.getBorderStyles(this.el),
-      ...this.getShadowStyles(),
-      ...this.getRectStyles(),
-    }
+    Object.assign(
+      styles,
+      this.getBorderStyles(this.el),
+      this.getShadowStyles(),
+      this.getRectStyles(),
+    )
     if (!styles['line-height']) {
       if (el instanceof SVGTextElement || el instanceof SVGTSpanElement) {
         if (el instanceof SVGTextElement) {
@@ -604,7 +638,7 @@ class StyleParser {
       mergeOpacity('color')
     }
   }
-  getStyle() {
+  getStyle(): Styles {
     const { root, rect, el, SVGStyle } = this
     const StyleKey = '@svg-measure/styles'
     if (el[StyleKey]) return el[StyleKey]
@@ -629,8 +663,8 @@ class StyleParser {
   }
 }
 
-export function getCss(el: SVGElement, rect: Rect, root: SVGSVGElement) {
-  const styles = new StyleParser(el, rect, root).getStyle()
+export function getCss(el: SVGElement, root: SVGSVGElement, rect?: Rect) {
+  const styles = new StyleParser(el, root, rect).getStyle()
   const css = Object.keys(styles).reduce((acc, k) => {
     return acc.push(`${k}: ${styles[k]};\n`), acc
   }, [] as string[])
