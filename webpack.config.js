@@ -9,7 +9,8 @@ const path = require('path')
 
 const __DEV__ = process.env.NODE_ENV === 'development'
 
-const DIST = `${__dirname}/static/dist/`
+const Dist = `${__dirname}/static/dist/`
+const Name = 'inker'
 
 module.exports = {
   mode: process.env.NODE_ENV,
@@ -18,8 +19,8 @@ module.exports = {
   },
   output: {
     filename: "[name]_[hash:5].js",
-    path: DIST,
-    publicPath: '/svg-measure/static/dist/',
+    path: Dist,
+    publicPath: `/${Name}/static/dist/`,
   },
 
   // Enable sourcemaps for debugging webpack's output.
@@ -88,7 +89,7 @@ module.exports = {
     }),
     // new webpack.DllReferencePlugin({
     //   context: __dirname,
-    //   manifest: require(`${DIST}/vendor-manifest.json`),
+    //   manifest: require(`${Dist}/vendor-manifest.json`),
     // }),
     new HtmlWebpackPlugin({
       __DEV__: __DEV__,
@@ -112,7 +113,7 @@ module.exports = {
       }
     }),
     !__DEV__ && new OfflinePlugin({
-      appShell: '/svg-measure/',
+      appShell: `/${Name}/`,
       responseStrategy: 'cache-first',
       caches: {
         main: ['**/*.js', '**/*.{svg,png,jpg}'],
@@ -120,12 +121,12 @@ module.exports = {
 				optional: [':rest:']
       },
       externals: [
-        '/svg-measure/'
+        `/${Name}/`
       ],
       exclude: ['**/.*', '**/*.map', '**/*.gz'],
       ServiceWorker: {
         events: true,
-        publicPath: '/svg-measure/sw.js'
+        publicPath: `/${Name}/sw.js`
       }
     }),
   ].filter(Boolean),

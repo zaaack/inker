@@ -489,8 +489,11 @@ class StyleParser {
         return out.includes('out') || out === 'blur' // xd only has blur
       }
 
-      let $resultEl = $offset || $blur || $composite
-      let isOut = $resultEl ? containsOut(getAttr($resultEl, 'result', root)) : true
+      let $resultEl = $blur || $offset || $composite
+      let isOut = true
+      if ($resultEl) {
+        isOut = containsOut(getAttr($resultEl, 'result', root))
+      }
       if ($componentTransfer) {
         // gravit
         let $feFuncA = $componentTransfer.querySelector('feFuncA') as SVGFEFuncAElement | null
