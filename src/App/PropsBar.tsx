@@ -5,7 +5,7 @@ import { cx, css } from 'emotion'
 import TopBar from 'App/Widgets/TopBar'
 import * as Icons from 'Icons'
 import * as Utils from 'utils'
-import { getIn } from 'hydux-mutator'
+import { getIn, updateIn, setIn } from 'hydux-mutator'
 import Clipboard from 'react-clipboard.js'
 // import * as Prism from 'prismjs'
 // import 'prismjs/themes/prism-solarizedlight.css'
@@ -17,74 +17,97 @@ import * as LRUCache from 'lru-cache'
 
 hljs.registerLanguage('css', hljsCss)
 
-const { Cmd } = Hydux
-export interface PanelItem {
-  title: string
-  content: string
-  processor?: (v: string) => string
+export interface Profile {
+  name: string
+  unit: {
+    name: string
+    rate: number
+  },
+  colors: { [k: string]: string }
+  lengths: { [k: string]: string }
 }
+
+namespace Profile {
+  export const init = (): Profile => ({
+    name: 'default',
+    unit: {
+      name: 'px',
+      rate: 1,
+    },
+    colors: {},
+    lengths: {},
+  })
+}
+
+export interface Props {
+  text: string
+  css: string
+  highlightedCss: string
+}
+export namespace Props {
+  export const init = (): Props => ({
+    text: '',
+    css: '',
+    highlightedCss: '',
+  })
+}
+
+const { Cmd } = Hydux
 export const init = () => ({
   state: {
+    profile: Profile.init(),
+    profileChanged: false,
+    profiles: [],
     visible: true,
     selected: null as null | RectLayer,
-    items: [] as PanelItem[],
     animIdx: -1,
+    props: Props.init(),
   },
-  cmd: Cmd.none,
+  cmd: Cmd.ofSub<Actions>(
+    // tslint:disable-next-line:no-empty
+    _ => {
+    }
+  ),
 })
+
+function highlightCss(v: string) {
+  let key = v
+  let cachedV = cache.get(key)
+  if (cachedV) return cachedV
+  v = hljs.highlightAuto(`.cls {${v}}`, ['css']).value.trim()
+  console.log('v', v)
+  v = v.replace(/<[^>]*hljs-selector-class[^>]*>[^<]*<\/span>/, '')
+  v = v.trim().slice(1, -1)
+  cache.set(key, v)
+  return v
+}
 
 const cache = new LRUCache<string, string>({ max: 10 })
 export const actions = {
   setSelected: (selected: null | RectLayer, css: string) => (state: State, actions: Actions): Hydux.AR<State, Actions> => {
+    const props = Props.init()
     state = {
       ...state,
       visible: !!selected,
       selected,
+      props,
     }
     if (selected) {
-      state.items = []
-      let innerText = selected.node.textContent
+      let { node } = selected
+      if (node.tagName === 'tspan') {
+        node = node.closest('text') || node
+      }
+      let innerText = node.textContent
       innerText = innerText && innerText.trim()
       if (innerText) {
-        state.items.push({
-          title: 'Text Content',
-          content: innerText,
-        })
+        props.text = innerText
       }
       if (css) {
-        state.items.push({
-          title: 'CSS',
-          content: css,
-          processor(v) {
-            try {
-              let key = v
-              let cachedV = cache.get(key)
-              if (cachedV) return cachedV
-
-              v = hljs.highlightAuto(`.cls {${v}}`, ['css']).value.trim()
-              console.log('v', v)
-              v = v.replace(/<[^>]*hljs-selector-class[^>]*>[^<]*<\/span>/, '')
-              v = v.trim().slice(1, -1)
-              cache.set(key, v)
-              return v
-            } catch (error) {
-              console.error(error)
-            }
-            return v
-          }
-        })
+        props.css = css
+        props.highlightedCss = highlightCss(css)
       }
     }
     return state
-  },
-  setAnimIdx: (animIdx: number) => (state: State, actions: Actions): Hydux.AR<State, Actions> => {
-    return [
-      { animIdx },
-      Cmd.ofSub(
-        _ =>
-          animIdx >= 0 && setTimeout(_.setAnimIdx, 300, -1)
-      )
-    ]
   },
 }
 
@@ -105,7 +128,7 @@ const panelCss = css`
     padding: 0 7px 0 12px;
     margin-bottom: 18px;
 
-    .btn-copy {
+    .btn {
       cursor: pointer;
       width: 30px;
       height: 30px;
@@ -140,24 +163,34 @@ const panelCss = css`
 
 function PropsPanel({
   title,
-  content,
-  displayContent,
-  onCopyAnim,
-  animate
-}: PanelItem & {
-  displayContent: string
-  onCopyAnim: () => void
-  animate: boolean
+  children,
+  copyText,
+  btns,
+  hidden,
+}: {
+  title: string
+  children: React.ReactChildren | React.ReactChild
+  copyText?: string
+  btns?: React.ReactNode[]
+  hidden?: boolean
 }) {
+  if (hidden) {
+    return null
+  }
   return (
     <div className={panelCss}>
       <div className="title">
         {title}
-        <Clipboard onClick={onCopyAnim} component="div" className={cx('btn-copy', animate && 'anim')} data-clipboard-text={content}>
-          <Icons.Copy />
-        </Clipboard>
+        {copyText && (
+          <Clipboard component="div" className="btn copy" data-clipboard-text={copyText}>
+            <Icons.Copy />
+          </Clipboard>
+        )}
+        {btns}
       </div>
-      <div className="content" dangerouslySetInnerHTML={{ __html: displayContent }}></div>
+      <div className="content">
+        {children}
+      </div>
     </div>
   )
 }
@@ -203,17 +236,20 @@ export function view(
   return (
     <div className={cx(rootCss, state.selected && 'visible')}>
       <div className="wrapper">
-        {state.items.map(
-          (item, i) => (
-            <PropsPanel
-              title={item.title}
-              content={item.content}
-              displayContent={item.processor ? item.processor(item.content) : item.content}
-              onCopyAnim={() => actions.setAnimIdx(i)}
-              animate={i === state.animIdx}
-            />
-          )
-        )}
+        <PropsPanel
+          title="Text Content"
+          copyText={state.props.text}
+          hidden={!state.props.text}
+        >
+          {state.props.text}
+        </PropsPanel>
+        <PropsPanel
+          title="CSS"
+          copyText={state.props.css}
+          hidden={!state.props.css}
+        >
+          <div dangerouslySetInnerHTML={{ __html: state.props.highlightedCss }} />
+        </PropsPanel>
         <div className={cx(panelCss, 'info')}>
           Powered by <a target="_blank" href="https://github.com/hydux/hydux">hydux</a>
         </div>

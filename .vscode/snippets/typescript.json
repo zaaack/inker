@@ -1,0 +1,19 @@
+{
+  "model": {
+    "prefix": "mod",
+    "body": [
+      "import Base from 'database/Base'",
+      "",
+      "interface ${1} extends Base {",
+      " ${2}",
+      "}",
+      "",
+      "namespace ${1} {",
+      " const init = (input: Base.Input<${1}>) => Base.init(input)",
+      "}",
+      "",
+      "export default ${1}"
+    ],
+    "description": "create model"
+  }
+}

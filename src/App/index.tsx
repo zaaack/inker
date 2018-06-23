@@ -98,19 +98,14 @@ export const view = (state: State.State, actions: State.Actions) => {
               <div className="btn-group">
                 <div
                   className="btn"
-                  onClick={
-                    _ => actions.artboard.scaleDown()
-
-                  }
+                  onClick={actions.artboard.scaleDown}
                 >
                   -
                 </div>
                 <div className="label">{state.artboard.scale * 100}%</div>
                 <div
                   className="btn"
-                  onClick={
-                    _ => actions.artboard.scaleUp()
-                  }
+                  onClick={actions.artboard.scaleUp}
                 >
                   +
                 </div>

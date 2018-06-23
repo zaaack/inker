@@ -406,7 +406,7 @@ class StyleParser {
       case 'rx':
       case 'ry':
         key = 'border-radius'
-        val = /^\d+$/.test(val) ? val + 'px' : val
+        val = /^[\d\.]+$/.test(val) ? val + 'px' : val
         if (styles[key] && styles[key] !== val) {
           val = originalKey === 'rx' ? `${val}/${styles[key]}` : `${styles[key]}/${val}`
         }

@@ -133,12 +133,7 @@ export function view(
             <div
               key={i}
               className={cx('item', current && item.content === current.content && 'selected')}
-              onClick={
-                e => {
-                  onItemClick(item, i)
-                  ;(e.target as HTMLElement).scrollIntoView()
-                }
-              }
+              onClick={e => onItemClick(item, i)}
             >
               <img src={Utils.svg2dataUrl(item.content)} alt="" className="cover"/>
               <div className="title">{item.title || item.name}</div>

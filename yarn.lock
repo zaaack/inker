@@ -2058,6 +2058,10 @@ detective@^5.0.2:
     defined "^1.0.0"
     minimist "^1.1.1"
 
+dexie@^2.0.4:
+  version "2.0.4"
+  resolved "http://registry.npm.taobao.org/dexie/download/dexie-2.0.4.tgz#6027a5e05879424e8f9979d8c14e7420f27e3a11"
+
 diff-match-patch@^1.0.0:
   version "1.0.1"
   resolved "http://registry.npm.taobao.org/diff-match-patch/download/diff-match-patch-1.0.1.tgz#d5f880213d82fbc124d2b95111fb3c033dbad7fa"
@@ -5977,6 +5981,10 @@ reduce-function-call@^1.0.1:
   resolved "http://registry.npm.taobao.org/reduce-function-call/download/reduce-function-call-1.0.2.tgz#5a200bf92e0e37751752fe45b0ab330fd4b6be99"
   dependencies:
     balanced-match "^0.4.2"
+
+reflect-metadata@^0.1.12:
+  version "0.1.12"
+  resolved "http://registry.npm.taobao.org/reflect-metadata/download/reflect-metadata-0.1.12.tgz#311bf0c6b63cd782f228a81abe146a2bfa9c56f2"
 
 regenerate@^1.2.1:
   version "1.4.0"
