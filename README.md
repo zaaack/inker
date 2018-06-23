@@ -1,6 +1,6 @@
 # Inker
 
-![](https://github.com/zaaack/inker/blob/master/docs/media/logo.png?raw=true)
+![](https://github.com/zaaack/inker/blob/master/docs/media/logo.svg?raw=true)
 
 
 [![Build Status](https://travis-ci.org/zaaack/inker.svg?branch=master)](https://travis-ci.org/zaaack/inker)
