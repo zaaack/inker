@@ -113,7 +113,7 @@ export const view = (state: State.State, actions: State.Actions) => {
             </div>
           </div>
           <a
-            href="https://github.com/zaaack/svg-measure"
+            href="https://github.com/zaaack/inker"
             target="_blank"
             className="btn github"
           >

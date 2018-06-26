@@ -246,6 +246,10 @@ function Line(
 }
 let rafId = 0
 export const view = (state: State, actions: Actions) => {
+  const hideRectHint =
+    state.hover &&
+    state.selected &&
+    state.hover.node !== state.selected.node
   return (
     <div
       className={rootCss}
@@ -264,8 +268,8 @@ export const view = (state: State, actions: Actions) => {
               key={'rect'}
               className="rect selected"
               style={scaleRect(state.selected.rect, state.scale)}
-              data-width={Math.round(state.hover ? 0 : state.selected.rect.width) + 'px'}
-              data-height={Math.round(state.hover ? 0 : state.selected.rect.height) + 'px'}
+              data-width={Math.round(hideRectHint ? 0 : state.selected.rect.width) + 'px'}
+              data-height={Math.round(hideRectHint ? 0 : state.selected.rect.height) + 'px'}
             />,
             state.selected.lines.map(
               (line, j) => (

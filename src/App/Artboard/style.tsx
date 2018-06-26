@@ -460,10 +460,10 @@ class StyleParser {
     let style = {} as Styles
     if (el.tagName === 'rect') {
       let width = getAttr(el, 'stroke-width', this.root)
-      let color = getAttr(el, 'stroke', this.root) || 'black'
+      let color = getAttr(el, 'stroke', this.root)
       let widthNum = width && Number(parseFloat(width).toFixed(1))
-      if (widthNum) {
-        style['border'] = `${widthNum}px solid ${formatColor(color)}`
+      if (widthNum || color) {
+        style['border'] = `${widthNum || '1'}px solid ${formatColor(color || 'black')}`
       }
     }
     return style

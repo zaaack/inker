@@ -75,6 +75,7 @@ describe('shadow', () => {
     $svg = files.shadow.xd()
     testCss($svg, '#test1', `
       background-color: #ffffff;
+      border: 1px solid #707070;
       box-shadow: 0 3px 6px rgba(0, 0, 0, .16);
       width: 82px;
       height: 72px;
