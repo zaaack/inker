@@ -116,8 +116,8 @@ module.exports = {
       appShell: `/${Name}/`,
       responseStrategy: 'cache-first',
       caches: {
-        main: ['**/*.js', '**/*.{svg,png,jpg}'],
-				additional: ['*.chunk.js', '*.worker.js', ':externals:'],
+        main: ['**/*.js', '**/*.{svg,png,jpg}', '*.chunk.js', '*.worker.js', ':externals:'],
+				additional: [],
 				optional: [':rest:']
       },
       externals: [
