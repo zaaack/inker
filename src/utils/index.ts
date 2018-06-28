@@ -106,3 +106,13 @@ let counter = 1
 export function uid(label: string = '') {
   return `uid_${label}_${counter++}`
 }
+
+export function defaults<T>(a: T | undefined, defaults: T) {
+  return typeof a === 'undefined' ? defaults : a
+}
+
+export const sleep = (ms: number) => new Promise(res => setTimeout(res, ms))
+
+export const log = (...args) => __DEV__ && console.log(...args)
+export const time = (...args) => __DEV__ && console.time(...args)
+export const timeEnd = (...args) => __DEV__ && console.timeEnd(...args)

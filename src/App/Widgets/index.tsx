@@ -1,49 +1,50 @@
 import * as React from 'react'
 import { css, cx } from 'emotion'
+import Loading from 'react-loading'
 
 const hintCss = css`
   position: fixed;
   left: 0;
   top: 0;
-  width: 100%;
-  height: 100%;
+  width: calc(100% - 40px);
+  height: calc(100% - 40px);
   box-sizing: border-box;
-  padding: 60px 40px;
+  margin: 20px;
   background: rgba(0, 0, 0, 0.4);
-  &::before {
-    content: '';
-    display: block;
-    border: 2px dashed rgb(102, 102, 102);
-    border-radius: 10px;
-    width: 100%;
-    height: 100%;
-    box-sizing: border-box;
-    position: relative;
-  }
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 2px dashed rgb(102, 102, 102);
+  border-radius: 10px;
 
   span {
     color: #e8e8e8;
-    text-align: center;
-    display: block;
-    position: absolute;
-    width: 100%;
     white-space: normal;
-    padding: 40px;
-    top: 50%;
-    left: 0;
     line-height: 1.6;
-    transform: translateY(-50%);
     box-sizing: border-box;
+    display: block;
+    width: 80%;
+    text-align: center;
+  }
+
+  .loading {
+
   }
 `
 
-export function DropHint(
-  { position, className }:
-  { position?: React.CSSProperties['position'], className?: string }
+export function DropHint({
+  position,
+  className,
+  isLoading,
+}: {
+  position?: React.CSSProperties['position']
+  className?: string
+  isLoading?: boolean
+}
 ) {
   return (
     <div className={cx(hintCss, className)} style={{ position }}>
-      <span>Drop your SVG files here...</span>
+      {isLoading ? <Loading type="spin" color="white" className="loading" /> : <span>Drop your SVG files here...</span>}
     </div>
   )
 }

@@ -135,8 +135,8 @@ function getSVGStyle(
       style[key] = comStyle.getPropertyValue(key)
     }
   )
-  console.log('svgstyle', el.tagName, el.className && el.className.baseVal, style)
-  console.log(parenStyle, attrStyle, classStyle, elStyle)
+  Utils.log('svgstyle', el.tagName, el.className && el.className.baseVal, style)
+  Utils.log(parenStyle, attrStyle, classStyle, elStyle)
   return style
 }
 
@@ -383,7 +383,7 @@ class StyleParser {
             key = 'background-color'
           }
           let el = getRefElByVal(val, root)
-          console.log('el', el && el.tagName, val)
+          Utils.log('el', el && el.tagName, val)
           if (!el) {
             val = parseColor(val)
             break // it's a normal background-color
@@ -392,10 +392,10 @@ class StyleParser {
             [key, val] = this.transformGradients(el, key, val)
           } else {
             key = ''
-            console.log(new Error('unimplemented'), key, val)
+            console.error(new Error('unimplemented'), key, val)
           }
         } else {
-          console.log(new Error('unimplemeneted'), key, val)
+          console.error(new Error('unimplemeneted'), key, val)
         }
         break
       }

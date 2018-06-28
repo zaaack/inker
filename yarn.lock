@@ -5858,6 +5858,10 @@ react-emotion@^9.1.3:
     babel-plugin-emotion "^9.1.2"
     create-emotion-styled "^9.1.2"
 
+react-loading@^2.0.2:
+  version "2.0.2"
+  resolved "http://registry.npm.taobao.org/react-loading/download/react-loading-2.0.2.tgz#bc6d908fa316e1ccd677b7567792049a9bb4be0d"
+
 react@^16.2.0:
   version "16.4.0"
   resolved "https://registry.npmjs.org/react/-/react-16.4.0.tgz#402c2db83335336fba1962c08b98c6272617d585"

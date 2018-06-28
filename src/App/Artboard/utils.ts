@@ -36,7 +36,6 @@ export namespace Rect {
   }
   export function fromEl(el: Element): Rect {
     if (el[TextFixedRect]) {
-      console.log('TextFixedRect', el[TextFixedRect])
       return { ...el[TextFixedRect] }
     }
     return fromClient(el.getBoundingClientRect())

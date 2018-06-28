@@ -10,12 +10,12 @@ import * as Dropzone from 'react-dropzone'
 // const testSvg = require('../test/fixtures/work/1.svg')
 // const testSvg = require('../test/fixtures/shadow.svg')
 // const testSvg = require('../test/fixtures/gravit/shadow.svg')
-
+const getTestSVG = async () => (await import('../test/fixtures/uikit/xd/Category.svg')).default as string
 const { Cmd } = Hydux
 async function loadDemo(_: Actions) {
   if (!__DEV__ || !window['@demo-loaded']) {
     window['@demo-loaded'] = true
-    const testSvg = (await import('../test/fixtures/uikit/xd/Category.svg')).default
+    const testSvg = await getTestSVG()
     // const testSvg = require('../test/fixtures/svg-measure.svg')
     let dom = Parse5.parse(testSvg)
     let title = Utils.findOne(dom, _ => _.tagName === 'title')
@@ -67,7 +67,8 @@ export const init = () => {
   return {
     state: {
       ...subInits.state,
-      dropzoneActive: false,
+      dropzoneIsVisible: false,
+      dropzoneIsLoading: false,
     },
     cmd: Cmd.batch<Actions>(
       subInits.cmd,
@@ -86,8 +87,7 @@ function readSvgFile(file: File) {
       const reader = new FileReader()
       reader.onload = () => {
         const svgStr = reader.result
-        let dom = Parse5.parse(svgStr)
-        let title = Utils.findOne(dom, _ => _.tagName === 'title')
+        let title = (svgStr.match(/<title>([^<]*?)<\/title>/) || []).map(s => s.trim())[1]
         res({
           name: file.name,
           title: title ? title.innerText : name,
@@ -107,40 +107,62 @@ function readSvgFile(file: File) {
     }
   )
 }
+
+let isFirstUpload = true
+
 export const actions = {
   artboard: Artboard.actions,
   sidebar: SideBar.actions,
   propsbar: PropsBar.actions,
+  toggleDropzon: (visible: boolean, loading?: boolean) => (state: State, actions: Actions): Hydux.AR<State, Actions> => {
+    return {
+      dropzoneIsVisible: visible,
+      dropzoneIsLoading: Utils.defaults(loading, !state.dropzoneIsLoading),
+    }
+  },
   onDrop: (accepted: Dropzone.ImageFile[], rejected: Dropzone.ImageFile[], event: React.DragEvent<HTMLDivElement>) => (state: State, actions: Actions): Hydux.AR<State, Actions> => {
 
     return [
-      { dropzoneActive: false },
+      state,
       Cmd.ofSub(
         async _ => {
-          let svgFiles = (await Promise.all(accepted.map(readSvgFile))).filter(
-            (res): res is Artboard.SVGFile => {
-              if ('target' in res) {
-                console.error(new Error(`Read svg file error`), res)
-                return false
+          if (isFirstUpload) {
+            _.sidebar.setArtboards([])
+            isFirstUpload = false
+          }
+          _.toggleDropzon(true, true)
+          type TaskItem = Artboard.SVGFile | FileReaderProgressEvent
+          try {
+            let groups = await Promise.all(
+              accepted.map(readSvgFile)
+            )
+            let svgFiles = ([] as TaskItem[]).concat(...groups).filter(
+              (res): res is Artboard.SVGFile => {
+                if ('target' in res) {
+                  console.error(new Error(`Read svg file error`), res)
+                  return false
+                }
+                return true
               }
-              return true
+            )
+            for (const svgFile of svgFiles) {
+              await _.sidebar.appendArtboards([svgFile])
+              await Utils.sleep(10)
             }
-          )
-          _.sidebar.setArtboards(state.sidebar.artboards.concat(svgFiles))
-          _.sidebar.toggle(true)
-          if (!state.artboard.artboard) {
+            _.sidebar.toggle(true)
             _.artboard.setArtboard(svgFiles[0])
+          } finally {
+            _.toggleDropzon(false, false)
           }
         }
       )
     ]
   },
   onDragEnter: () => (state: State, actions: Actions): Hydux.AR<State, Actions> => {
-    return { dropzoneActive: true }
+    return { dropzoneIsVisible: true }
   },
   onDragLeave: () => (state: State, actions: Actions): Hydux.AR<State, Actions> => {
-
-    return { dropzoneActive: false }
+    return { dropzoneIsVisible: false }
   },
 }
 
@@ -151,7 +173,7 @@ Utils.overrideAction(
     let res = action(selected)
     if (selected && ps.artboard.root) {
       let css = Styles.getCss(selected.node, ps.artboard.root, selected.rect)
-      console.log(selected.node, css)
+      Utils.log(selected.node, css)
       pa.propsbar.setSelected(selected, css)
     } else {
       pa.propsbar.setSelected(selected, '')

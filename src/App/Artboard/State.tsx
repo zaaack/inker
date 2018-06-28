@@ -1,6 +1,7 @@
 import * as React from 'react'
 import * as Hydux from 'hydux'
 export * from './utils'
+import * as Utils from 'utils'
 import { SVGFile, Rect, Line, RectLayer, IconRectRefKey, RectKey } from './utils'
 import * as Style from './style'
 
@@ -120,7 +121,7 @@ function bindSvgEvents(el: SVGElement, state: State, actions: Actions, rootRect:
       actions.handleMouseout()
     }, false)
     el.addEventListener('click', e => {
-      console.log('click', node)
+      Utils.log('click', node)
       e.stopPropagation()
       actions.handleClick({
         node,
@@ -156,7 +157,7 @@ export const actions = {
       { ...state, artboard, hover: null, selected: null },
       Cmd.ofSub(
         actions => {
-          console.log('init')
+          Utils.log('init')
           const wrapper = document.getElementById(state.containerId)!
           wrapper.innerHTML = ''
           wrapper.innerHTML = artboard.content
@@ -226,7 +227,7 @@ export const actions = {
     state.initDrag.y = e.screenY
     state.initScroll.x = document.documentElement.scrollTop
     state.initScroll.y = document.documentElement.scrollLeft
-    console.log('dragStart', state)
+    Utils.log('dragStart', state)
   },
   dragMove: (e: MouseEvent) => (state: State, actions: Actions): Hydux.AR<State, Actions> => {
     e.stopPropagation()
@@ -239,7 +240,7 @@ export const actions = {
     state.initDrag.y = e.screenY
     let scrollLeft = state.initScroll.x - deltaX
     let scrollTop = state.initScroll.y - deltaY
-    console.log('dragMove', deltaX, deltaY, scrollLeft, scrollTop)
+    Utils.log('dragMove', deltaX, deltaY, scrollLeft, scrollTop)
     rafId && cancelAnimationFrame(rafId)
     rafId = requestAnimationFrame(
       () => {
@@ -250,7 +251,7 @@ export const actions = {
     )
   },
   dragEnd: (e: MouseEvent) => (state: State, actions: Actions): Hydux.AR<State, Actions> => {
-    console.log('dragEnd')
+    Utils.log('dragEnd')
     state.isDragging = false
   },
 }

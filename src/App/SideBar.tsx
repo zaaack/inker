@@ -103,7 +103,6 @@ const rootCss = css`
       &.dropzone {
         height: 200px;
         .hint {
-          padding: 20px;
           position: relative;
           opacity: 1;
           background: transparent;

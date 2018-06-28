@@ -128,8 +128,8 @@ export const view = (state: State.State, actions: State.Actions) => {
         actions.artboard.setArtboard,
         actions.onDrop,
       )}
-      {state.dropzoneActive && (
-        <Widgets.DropHint />
+      {state.dropzoneIsVisible && (
+        <Widgets.DropHint isLoading={state.dropzoneIsLoading} />
       )}
     </DropZone>
   )
