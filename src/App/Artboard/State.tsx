@@ -38,16 +38,16 @@ export const init = () => ({
 
 export const LineWidth = 1
 
-function calcRectBorderLines(rect: Rect, rootRect: Rect): Line[] {
+function calcRectBorderLines(rect: Rect, rootRect: Rect, scale: number): Line[] {
   function initHorizon(top: number): Line {
     return {
       rect: {
         left: 0,
         top,
-        width: rootRect.width,
+        width: rootRect.width * scale,
         height: LineWidth,
       },
-      length: rootRect.width,
+      length: rootRect.width * scale,
       direction: 'horizon',
     }
   }
@@ -57,17 +57,17 @@ function calcRectBorderLines(rect: Rect, rootRect: Rect): Line[] {
         left,
         top: 0,
         width: LineWidth,
-        height: rootRect.height,
+        height: rootRect.height * scale,
       },
-      length: rootRect.height,
+      length: rootRect.height * scale,
       direction: 'vertical',
     }
   }
   return [
-    initVertical(rect.left - LineWidth), // left
-    initVertical(rect.left + rect.width), // right
-    initHorizon(rect.top - LineWidth), // top
-    initHorizon(rect.top + rect.height), // bottom
+    initVertical(rect.left * scale - LineWidth), // left
+    initVertical((rect.left + rect.width) * scale), // right
+    initHorizon(rect.top * scale - LineWidth), // top
+    initHorizon((rect.top + rect.height) * scale), // bottom
   ]
 }
 const hoverableTags = new Set(['g', 'svg', 'rect', 'text', 'tspan', 'path', 'image', 'circle', 'clipPath', 'ellipse', 'a', 'line', 'marker', 'polygon', 'polygon', 'polyline', 'use'])
@@ -113,7 +113,7 @@ function bindSvgEvents(el: SVGElement, state: State, actions: Actions, rootRect:
       actions.handleMouseover({
         node,
         rect,
-        lines: calcRectBorderLines(rect, rootRect),
+        lines: scale => calcRectBorderLines(rect, rootRect, scale),
       })
     }, false)
     el.addEventListener('mouseout', e => {
@@ -126,7 +126,7 @@ function bindSvgEvents(el: SVGElement, state: State, actions: Actions, rootRect:
       actions.handleClick({
         node,
         rect,
-        lines: calcRectBorderLines(rect, rootRect),
+        lines: scale => calcRectBorderLines(rect, rootRect, scale),
       })
       // const css = Style.getCss(node, rect, root)
       // actions.setCss(css)

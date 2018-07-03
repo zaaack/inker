@@ -45,7 +45,7 @@ export namespace Rect {
 export interface RectLayer {
   node: SVGElement
   rect: Rect
-  lines: Line[]
+  lines: (scale: number) => Line[]
 }
 export const IconRectRefKey = '@svg-measure/icon-ref'
 export const TextFixedRect = '@svg-measure/text-fixed-rect'

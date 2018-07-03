@@ -271,13 +271,13 @@ export const view = (state: State, actions: Actions) => {
               data-width={Math.round(hideRectHint ? 0 : state.selected.rect.width) + 'px'}
               data-height={Math.round(hideRectHint ? 0 : state.selected.rect.height) + 'px'}
             />,
-            state.selected.lines.map(
+            state.selected.lines(state.scale).map(
               (line, j) => (
                 <Line
                   key={j}
                   line={line}
-                  scale={state.scale}
                   type="selected"
+                  scale={1}
                 />
               )
             )
