@@ -25,7 +25,7 @@ const rootCss = css`
     display: flex;
     align-items: center;
 
-    .btn{
+    .btn {
       width: ${Consts.iconWidth}px;
       height: ${Consts.iconWidth}px;
       cursor: pointer;

@@ -216,9 +216,6 @@ const rootCss = css`
   &.visible {
     transform: translateX(0);
   }
-  &::-webkit-scrollbar {
-    display: none;
-  }
 
   .info {
     margin-top: 40px;

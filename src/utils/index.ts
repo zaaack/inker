@@ -12,6 +12,27 @@ injectGlobal`
     background-color: rgb(32, 31, 31);
     font-family: sans-serif;
   }
+    /* width */
+  *::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+  }
+
+  /* Track */
+  *::-webkit-scrollbar-track {
+      background: #333;
+  }
+
+  /* Handle */
+  *::-webkit-scrollbar-thumb {
+      background: #555;
+      border-radius: 3px;
+  }
+
+  /* Handle on hover */
+  *::-webkit-scrollbar-thumb:hover {
+      background: #888;
+  }
 `
 
 export function slug(key: string) {

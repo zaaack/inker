@@ -171,20 +171,32 @@ function caleDistanceLines(hover: RectLayer | null, selected: RectLayer | null, 
       extraLine = initLine()
       extraLine[start] = rect[start] + rect[size]
       extraLine[size] = (hoverRect[start] + hoverRect[size]) - (rect[start] + rect[size])
-    } else if (hoverRect[start] >= rect[start] + rect[size]) { // right/bottom
+    } else if (hoverRect[start] >= rect[start]) { // right/bottom
       line[start] = rect[start] + rect[size]
       line[size] = hoverRect[start] - (rect[start] + rect[size])
       debug('right/bottom')
+      let delta = hoverRect[start] - rect[start]
+      if (delta < rect[size] / 2) {
+        extraLine = initLine()
+        extraLine[start] = rect[start]
+        extraLine[size] = delta
+      }
     } else if (
       hoverRect[start] + hoverRect[size] <= rect[start] + rect[size]
     ) { // left/top
       line[start] = hoverRect[start] + hoverRect[size]
       line[size] = rect[start] - hoverRect[start] - hoverRect[size]
       debug('left/top')
+      let delta = rect[start] + rect[size] - (hoverRect[start] + hoverRect[size])
+      if (delta < rect[start] / 2) {
+        extraLine = initLine()
+        extraLine[start] = hoverRect[start] + hoverRect[size]
+        extraLine[size] = delta
+      }
     }
     if (line[size] < 0) {
       line[size] = -line[size]
-      line[start] = line[start] - line[start]
+      line[start] = line[start] - line[size]
     }
     if (line[size]) {
       lines.push({

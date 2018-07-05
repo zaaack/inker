@@ -71,10 +71,6 @@ const rootCss = css`
     height: ${window.innerHeight - Utils.TopBarHeight}px;
     background-color: rgb(46, 46, 46);
 
-    &::-webkit-scrollbar {
-      display: none;
-    }
-
     .item {
       margin: 0 auto 30px;
       cursor: pointer;
