@@ -4,6 +4,8 @@ import * as fs from 'fs'
 import * as path from 'path'
 import { getNodeRect } from '../App/Artboard/State'
 
+global['__DEV__'] = true
+
 const readFile = (file: string) =>
   fs.readFileSync(path.resolve(__dirname, file), 'utf8')
 

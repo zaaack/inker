@@ -22,7 +22,11 @@ if (process.env.NODE_ENV === 'development') {
       return !/drag/.test(action)
     }
   })(app)
-  // app = devTools()(app)
+  app = devTools({
+    filter(action) {
+      return !/drag/.test(action)
+    }
+  })(app)
   app = hmr()(app)
 }
 

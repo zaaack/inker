@@ -17,6 +17,7 @@ export interface Line {
   rect: Rect
   length: number
   direction: 'horizon' | 'vertical'
+  reverse?: boolean
 }
 export namespace Rect {
   export let empty: Rect = {

@@ -429,7 +429,7 @@ class StyleParser {
         let mask
         try {
           mask = root.querySelector(sel)
-        } catch {
+        } catch(e) {
           // ignore
         }
         if (!mask) return
@@ -695,6 +695,26 @@ function getTextLineHeight(el: SVGTextElement) {
   return lineHeight
 }
 
+function getDefaultLineHeight(font: string, content: string = 'abc') {
+  let key = font + content
+  let cache = Utils.lruCache.get(key)
+  if (cache) {
+    return cache
+  }
+  let svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
+  svg.setAttribute('viewBox', '0 0 1000 1000')
+  svg.setAttribute('width', '100')
+  svg.setAttribute('height', '100')
+  let text = document.createElementNS('http://www.w3.org/2000/svg', 'text')
+  text.innerHTML = content
+  text.setAttribute('font', font)
+  svg.appendChild(text)
+  document.body.appendChild(svg)
+  let height = text.getBBox().height
+  document.body.removeChild(svg)
+  Utils.lruCache.set(key, height)
+  return height
+}
 export function fixLineHeight(svg: SVGElement) {
   let textEls = Array.from(svg.querySelectorAll('text'))
   let gEls = Array.from(svg.querySelectorAll('g[line-spacing]'))
@@ -710,6 +730,8 @@ export function fixLineHeight(svg: SVGElement) {
   for (const text of textEls) {
     let rect = Rect.fromEl(text)
     let lineHeight = getTextLineHeight(text)
+    let font = getComputedStyle(text).font || ''
+    let defaultLineHeight = getDefaultLineHeight(font)
     if (lineHeight) {
       let tspans: SVGTSpanElement[] = Array.from(text.querySelectorAll('tspan'))
       let ys = [] as number[]
@@ -721,7 +743,8 @@ export function fixLineHeight(svg: SVGElement) {
           }
         }
       }
-      let realHeight = ys.length * lineHeight
+      let realHeight = ys[ys.length - 1] - ys[0] + lineHeight
+      console.log('text', text, {...rect}, [...ys], lineHeight)
       let offset = rect.height - realHeight
       rect.height = realHeight
       if (offset > 0) {

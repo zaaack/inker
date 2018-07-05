@@ -78,14 +78,29 @@ const rootCss = css`
           opacity: .8;
         }
         &::before {
-          top: -26px;
+          top: -22px;
           left: 50%;
           transform: translateX(-50%);
         }
         &::after {
           left: 0;
           top: 50%;
-          transform: translate(-120%, -50%);
+          transform: translate(-102%, -50%);
+        }
+
+        &.reverse {
+          &::before {
+            top: auto;
+            bottom: -22px;
+            left: 50%;
+            transform: translateX(-50%);
+          }
+          &::after {
+            left: auto;
+            right: 0;
+            top: 50%;
+            transform: translate(102%, -50%);
+          }
         }
       }
       .rect.selected {
@@ -141,13 +156,14 @@ function caleDistanceLines(hover: RectLayer | null, selected: RectLayer | null, 
   }
 
   function calcLine(lines: Line[], rect: Rect, direction: 'horizon' | 'vertical') {
+    let isHorizon = direction === 'horizon'
     let start = direction === 'horizon'
       ? 'left'
       : 'top' as 'left' | 'top'
     let size = direction === 'horizon'
       ? 'width'
       : 'height' as 'width' | 'height'
-
+    let reverse = false
     const line = initLine()
     const debug = type => console.debug(type, line, hoverRect, rect)
     let extraLine = null as Rect | null
@@ -161,6 +177,7 @@ function caleDistanceLines(hover: RectLayer | null, selected: RectLayer | null, 
       extraLine = initLine()
       extraLine[start] = hoverRect[start] + hoverRect[size]
       extraLine[size] = (rect[start] + rect[size]) - (hoverRect[start] + hoverRect[size])
+      reverse = true
     } else if (
       hoverRect[start] <= rect[start] &&
       hoverRect[start] + hoverRect[size] >= rect[start] + rect[size]
@@ -171,6 +188,7 @@ function caleDistanceLines(hover: RectLayer | null, selected: RectLayer | null, 
       extraLine = initLine()
       extraLine[start] = rect[start] + rect[size]
       extraLine[size] = (hoverRect[start] + hoverRect[size]) - (rect[start] + rect[size])
+      reverse = true
     } else if (hoverRect[start] >= rect[start]) { // right/bottom
       line[start] = rect[start] + rect[size]
       line[size] = hoverRect[start] - (rect[start] + rect[size])
@@ -203,6 +221,7 @@ function caleDistanceLines(hover: RectLayer | null, selected: RectLayer | null, 
         rect: line,
         length: line[size],
         direction,
+        reverse: !isHorizon && reverse,
       })
     }
     if (extraLine && extraLine[size]) {
@@ -210,6 +229,7 @@ function caleDistanceLines(hover: RectLayer | null, selected: RectLayer | null, 
         rect: extraLine,
         length: extraLine[size],
         direction,
+        reverse: isHorizon && reverse,
       })
     }
   }
@@ -229,8 +249,8 @@ function scaleRect(rect: Rect, scale: number) {
 }
 
 function Line(
-  { line, scale, type, dashed }:
-  { line: Line, scale: number, type: string, dashed?: boolean }
+  { line, scale, type, dashed, reverse }:
+  { line: Line, scale: number, type: string, dashed?: boolean, reverse?: boolean }
 ) {
   const style = scaleRect(line.rect, scale)
   if (line.direction === 'horizon') {
@@ -249,7 +269,7 @@ function Line(
   }
   return (
     <div
-      className={cx('line', type, dashed && 'dashed')}
+      className={cx('line', type, dashed && 'dashed', reverse && 'reverse')}
       style={style}
       data-length={Math.round(line.length) + 'px'}
       data-direction={line.direction}
@@ -312,6 +332,7 @@ export const view = (state: State, actions: Actions) => {
                 scale={state.scale}
                 type="hover"
                 dashed
+                reverse={line.reverse}
               />
             )
           )}

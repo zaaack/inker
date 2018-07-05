@@ -100,7 +100,7 @@ function readSvgFile(file: File) {
         res(e)
       }
       reader.onerror = e => {
-        console.error('file reading has failed', e)
+        console.error('file reading was failed', e)
         res(e)
       }
       reader.readAsText(file)

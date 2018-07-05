@@ -212,7 +212,7 @@ export const actions = {
     return { hover: layer }
   },
   handleMouseout: () => (state: State, actions: Actions): Hydux.AR<State, Actions> => {
-    return { hover: null }
+    // return { hover: null }
   },
   handleClick: (selected: RectLayer | null) => (state: State, actions: Actions): Hydux.AR<State, Actions> => {
     return { hover: null, selected }

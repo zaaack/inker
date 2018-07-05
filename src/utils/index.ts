@@ -47,12 +47,12 @@ export function deslug(key: string) {
   return key.replace(/-([a-z])/g, (_, c: string) => c.toUpperCase())
 }
 
-const svg2DataUrlCache = new LruCache<string, string>({ max: 100 })
+export const lruCache = new LruCache<string, any>({ max: 500 })
 export function svg2dataUrl(svg: string) {
-  let dataUrl = svg2DataUrlCache.get(svg)
+  let dataUrl = lruCache.get(svg)
   if (!dataUrl) {
     dataUrl = `data:image/svg+xml;utf8,${((svg.replace(/(<\?.*?\?>|\<\!--.*?--\>)/g, '')))}`
-    svg2DataUrlCache.set(svg, dataUrl)
+    lruCache.set(svg, dataUrl)
   }
   return dataUrl
 }

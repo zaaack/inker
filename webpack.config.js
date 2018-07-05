@@ -44,9 +44,24 @@ module.exports = {
       // All files with a '.ts' or '.tsx' extension will be handled by 'awesome-typescript-loader'.
       {
         test: /\.tsx?$/,
-        use: {
+        use: [{
           loader: "awesome-typescript-loader",
-        },
+          options: {
+            useTranspileModule: true,
+            transpileOnly: true,
+            declaration: false,
+            instance: 'at-loader2'
+          }
+        }, {
+          loader: './tools/minify-cssinjs-loader',
+        }, {
+          loader: "awesome-typescript-loader",
+          options: {
+            target: 'ESNEXT',
+            declaration: !__DEV__,
+            useTranspileModule: __DEV__,
+          },
+        }, ],
       },
       // All output '.js' files will have any sourcemaps re-processed by 'source-map-loader'.
       {

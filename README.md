@@ -9,7 +9,7 @@ Measure prototype designs by **SVG** files.
 
 Try  it online: <https://zaaack.github.io/inker>
 
-China mirror: <https://zane_young.gitee.io/inker/>
+🇨🇳 中国镜像: <https://zane_young.gitee.io/inker/>
 
 QQ group: 808553739
 
