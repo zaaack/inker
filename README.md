@@ -7,9 +7,7 @@
 
 Measure prototype designs by **SVG** files.
 
-## Sketch/Adobe XD Plugins
-
-https://github.com/inker8/
+**Sketch/Adobe XD Plugins: https://github.com/inker8/**
 
 Try  it online: <https://zaaack.github.io/inker>
 
